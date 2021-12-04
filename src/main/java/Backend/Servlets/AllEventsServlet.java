@@ -45,8 +45,6 @@ public class AllEventsServlet extends HttpServlet {
             ResultSet resultSet = db.getAllEvents();
             //helper method to send resultSet as a json object
             ResponseUtils.sendJsonResponse(resultSet, resp);
-
-
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {

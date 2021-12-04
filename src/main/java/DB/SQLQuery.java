@@ -5,12 +5,17 @@
  */
 package DB;
 
+import Backend.Servlets.CreateEventServlet;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class SQLQuery {
     private Connection con;
+    private static final Logger LOGGER = LogManager.getLogger(SQLQuery.class);
 
     /**
      * Constructor, takes in a connection to the database as the input
@@ -129,6 +134,32 @@ public class SQLQuery {
 
         ResultSet result = statement.executeQuery();
         return result;
+    }
+
+    /**
+     * Method to update the attending col of the event in the events table
+     * @param num
+     * @return
+     */
+    public boolean updateEventAttending (int num, int eventId) throws SQLException {
+        String query = "SELECT Attending FROM Events WHERE id = ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setInt(1, eventId);
+        ResultSet resultSet = statement.executeQuery();
+        /**
+         * TODO, GET COUNT OF ATTENDANCE FROM THE Events TABLE
+         */
+        while (resultSet.next()){
+            LOGGER.info(resultSet.getMetaData().getColumnName(1));
+        }
+        int currentAttendance = resultSet.getRow();
+        LOGGER.info("Current Attendance is " + currentAttendance);
+        return true;
+//        query = "UPDATE Events SET Attending = ? WHERE id = ? ";
+//        statement = con.prepareStatement(query);
+//        statement.setInt(1, currentAttendance+num);
+//        statement.setInt(2, eventId);
+//        return statement.executeUpdate() > 0;
     }
 
     /**
