@@ -61,7 +61,7 @@ public class SQLQuery {
      * @param date
      * @throws SQLException
      */
-    public void insertEvent (String name, String location, int attending, int capacity, int organizer, String date) throws SQLException{
+    public boolean insertEvent (String name, String location, int attending, int capacity, int organizer, String date) throws SQLException{
         String insertCommand = "INSERT INTO Events (Name, Location, Attending, Capacity, Organizer, Date) VALUES (?, ?, ?, ?, ?, ?);";
 
         PreparedStatement statement = con.prepareStatement(insertCommand);
@@ -73,26 +73,28 @@ public class SQLQuery {
 
         //jdbc parses the string into a date format on its own, we do not have to do that
         statement.setString(6, date);
-        statement.executeUpdate();
+        int i = statement.executeUpdate();
+        return i > 0; //i is only greater than 0 if the insertion was successful
     }
 
     /**
      * Method to insert a new user
      * @param firstName
      * @param lastName
-     * @param contact
+     * @param preferredName
      * @param email
      * @throws SQLException
      */
-    public void insertUser (String firstName, String lastName, int contact , String email) throws SQLException {
-        String insertCommand = "INSERT INTO Users (First_Name, Last_Name, Contact, Email) VALUES (?, ?, ?, ?, ?);";
+    public boolean insertUser (String firstName, String lastName, String preferredName , String email) throws SQLException {
+        String insertCommand = "INSERT INTO Users (First_Name, Last_Name, Preferred_Name, Email) VALUES (?, ?, ?, ?);";
 
         PreparedStatement statement = con.prepareStatement(insertCommand);
         statement.setString(1, firstName);
         statement.setString(2, lastName);
-        statement.setInt(3, contact);
+        statement.setString(3, preferredName);
         statement.setString(4, email);
-        statement.executeUpdate();
+        int i  = statement.executeUpdate();
+        return i > 0; //i is only greater than 0 if the insertion was successful
     }
 
     /**
@@ -150,6 +152,45 @@ public class SQLQuery {
         ResultSet result = statement.executeQuery();
         return result;
     }
+
+    public ResultSet getEventsUserAttending (int id) throws SQLException {
+        String query = "SELECT * FROM Events WHERE Events.id in (" +
+                    "SELECT Event_id FROM Event_Attendance WHERE User_id = ?)";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setInt(1, id);
+        return statement.executeQuery();
+    }
+
+    public ResultSet getEventsByUser (int id) throws SQLException {
+        String query = "SELECT * FROM Events WHERE Events.Organizer = ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setInt(1, id);
+        return statement.executeQuery();
+    }
+
+    public boolean purchaseTicket (int userId, int eventId) throws SQLException{
+        String query = "INSERT INTO Event_Attendance (Event_id, User_id) VALUES (?, ?);";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setInt(1, eventId);
+        statement.setInt(2, userId);
+        int i = statement.executeUpdate();
+        return i > 0; //i is only greater than 0 if the update was successful
+    }
+
+    public boolean userExists (String firstName, String lastName, String email) throws SQLException {
+        String query = "SELECT * FROM Users WHERE First_Name = ? AND Last_Name = ? AND Email = ?";
+
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setString(1, firstName);
+        statement.setString(2, lastName);
+        statement.setString(3, email);
+
+        ResultSet result = statement.executeQuery();
+
+        //if we find a row, then the user exists
+        return result.next();
+    }
+
 
     /**
      * Method where we actually execute the query and get the ResultSet

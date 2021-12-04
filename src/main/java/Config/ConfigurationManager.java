@@ -85,5 +85,15 @@ public class ConfigurationManager {
         return configuration.get("dbPassword");
     }
 
+    // return redirect_url
+    public HashMap<String, String> getSlackConfig() {
+        HashMap <String, String> slackConfig = new HashMap<>();
+        slackConfig.put("redirectUri", configuration.get("redirectUri"));
+        slackConfig.put("clientId", configuration.get("clientId"));
+        slackConfig.put("clientSecret", configuration.get("clientSecret"));
+        return slackConfig;
+    }
+
+
 
 }

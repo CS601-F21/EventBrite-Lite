@@ -96,13 +96,18 @@ nb-configuration.xml
 /.pnp
 .pnp.js
 
+/src/main/ui/node_modules
+/src/main/ui/.pnp
+/src/main/ui/.pnp.js
+
 #config
 <<<<<<< HEAD
-/config.json
+/configuration.json
 /recipes_with_nutritional_info.json
 /RAW_recipes.csv
 =======
 /backend/config.json
+/configuration.json
 >>>>>>> b4f65e52e4a067e39555948cbb8abe8ce05573b9
 
 # testing

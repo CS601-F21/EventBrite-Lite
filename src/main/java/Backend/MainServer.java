@@ -5,6 +5,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import java.sql.Connection;
+import java.util.HashMap;
 
 public class MainServer {
     private int port;
@@ -15,15 +16,19 @@ public class MainServer {
         this.port = port;
         server = new Server(this.port);
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        server.setHandler(context);
     }
 
     public void startServer () throws Exception {
+        server.setHandler(context);
         server.start();
     }
 
     public void setDBConnection (String name, SQLQuery db){
         context.setAttribute(name, db);
+    }
+
+    public void setSlackConfig(String name, HashMap<String, String> slackConfig){
+        context.setAttribute(name, slackConfig);
     }
 
     public void addServlet (Class handler, String path){
