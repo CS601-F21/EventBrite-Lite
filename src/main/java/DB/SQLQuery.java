@@ -45,6 +45,13 @@ public class SQLQuery {
         return executeFetchQuery(query);
     }
 
+    public ResultSet getUserInfo (int id) throws SQLException {
+        String query = "SELECT * FROM Users WHERE id = ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setInt(1, id);
+        return statement.executeQuery();
+    }
+
     /**
      * Method to get a ResultSet of all events and which users
      * are attending the event
@@ -278,6 +285,16 @@ public class SQLQuery {
         return result.next();
     }
 
+    public boolean checkUserExistWithId (int id) throws SQLException {
+        String query = "SELECT * FROM Users WHERE id = ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setInt(1, id);
+        ResultSet result = statement.executeQuery();
+
+        //if we find a row, then the user exists
+        return result.next();
+    }
+
     public boolean checkUserHasTicket (int userId, int eventId) throws SQLException {
         String query = "SELECT * FROM Event_Attendance WHERE User_id = ? AND Event_id = ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -327,6 +344,21 @@ public class SQLQuery {
         int i = statement.executeUpdate();
         return i > 0;
     }
+
+    public boolean updateUserName (int id, String name) throws SQLException {
+        String query = "UPDATE  Users\n" +
+                "SET \n" +
+                " Preferred_Name = ?\n" +
+                "WHERE\n" +
+                "    id = ?;";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setString(1, name);
+        statement.setInt(2, id);
+        int i = statement.executeUpdate();
+        return i > 0;
+    }
+
+
 }
 
 //        while(results.next()) {

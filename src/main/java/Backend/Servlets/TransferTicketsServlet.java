@@ -1,6 +1,6 @@
 /**
  * Author : Shubham Pareek
- * Purpose : API Call to this transfers the tickets betwee users
+ * Purpose : API Call to this transfers the tickets between users
  */
 package Backend.Servlets;
 
@@ -65,6 +65,7 @@ public class TransferTicketsServlet extends HttpServlet {
             } else {
                 ResponseUtils.send200OkResponse(false, "unable to update sql", resp);
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SQLException e) {

@@ -66,6 +66,9 @@ public class Main {
             //response will be a json object informing the front-end whether the event creation was successful or not
             //servlet will only handle POST Request, details about the request in the class
             server.addServlet(CreateEventServlet.class, "/createevent");
+            //response will be a json object informing the front-end whether the event creation was successful or not
+            //servlet will only handle POST Request, details about the request in the class
+            server.addServlet(UserInformationServlet.class, "/userinfo");
 
             //adding the database connection as an attribute to the context
             server.setDBConnection("db", query);
