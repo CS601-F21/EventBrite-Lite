@@ -14,5 +14,6 @@ public class SearchEventServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
+
     }
 }

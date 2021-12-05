@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static Backend.Servlets.Utilities.ResponseUtils.getResponse;
+import static Backend.Servlets.Utilities.ResponseUtils.send200OkResponse;
 
 public class PurchaseTicketServlet extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(PurchaseTicketServlet.class);
@@ -35,7 +36,7 @@ public class PurchaseTicketServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
-        HashMap<String, String> responseMap = new HashMap<>();
+
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
             int userId = Integer.parseInt(req.getParameter("userid"));
@@ -47,35 +48,14 @@ public class PurchaseTicketServlet extends HttpServlet {
             //we have to update the event attendance table as well as update the attending col in the event
             //table as well
             //both the methods will give a boolean whether the insertion/updation was successful or not
-//            boolean successful = db.purchaseTicket(userId, eventId);
-            boolean successful = db.updateEventAttending(1, eventId);
+            boolean successful = db.purchaseTicket(userId, eventId) && db.updateEventAttending(1, eventId);
             LOGGER.info("success is " + successful);
-            if (successful) {
-                /**
-                 * Response status 200, with ok set to true
-                 */
-                responseMap.put("ok", "true");
-            } else {
-                /**
-                 * Response status 200, with ok set to false
-                 */
-                responseMap.put("ok", "false");
-                responseMap.put("message" , "failed to update database");
-            }
+            send200OkResponse(successful, null, resp);
 
-            //making this conversion since we already have a method which takes in an arraylist
-            //of map and converts it into json string
-            ArrayList<HashMap<String, String>> responseList = new ArrayList<>();
-            responseList.add(responseMap);
-            //getting the json string
-            String response =  ResponseUtils.getResponse(responseList);
-            //sending the response
-            ResponseUtils.send200JsonResponse(response, resp);
         } catch (SQLException e) {
             try {
-                PrintWriter writer = resp.getWriter();
-                resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                writer.flush();
+                LOGGER.info("SQL Error");
+                send200OkResponse(false, "SQL ERROR", resp);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

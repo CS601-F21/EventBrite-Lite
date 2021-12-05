@@ -70,6 +70,32 @@ public class ResponseUtils {
         return allRows;
     }
 
+    public static void send200OkResponse (boolean success, String message, HttpServletResponse resp) throws IOException {
+        HashMap<String, String> responseMap = new HashMap<>();
+
+        if (success) {
+            /**
+             * Response status 200, with ok set to true
+             */
+            responseMap.put("ok", "true");
+        } else {
+            /**
+             * Response status 200, with ok set to false
+             */
+            responseMap.put("ok", "false");
+            responseMap.put("message" , message);
+        }
+
+        //making this conversion since we already have a method which takes in an arraylist
+        //of map and converts it into json string
+        ArrayList<HashMap<String, String>> responseList = new ArrayList<>();
+        responseList.add(responseMap);
+        //getting the json string
+        String response =  ResponseUtils.getResponse(responseList);
+        //sending the response
+        ResponseUtils.send200JsonResponse(response, resp);
+    }
+
     /**
      * Method to send a 200 response with a JSON Body
      * Takes in the response string and the response object and sends out the response
