@@ -17,6 +17,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class SearchEventServlet extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(SearchEventServlet.class);
@@ -45,18 +47,73 @@ public class SearchEventServlet extends HttpServlet {
             Gson gson = new Gson();
             SearchBody body = gson.fromJson(requestStr, SearchBody.class);
 
-            if (body.getContainsExactWord() == null){
-                ResponseUtils.send200OkResponse(false, "No search term", resp);
+            //if no search params were given
+            if (body.getContainsExactWord() == null && body.getPriceGreaterThan() == 0
+                && body.getPriceLessThan() == 0 && body.getLocation() == null){
+                /**
+                 * Search
+                 */
+                ResultSet resultSet = db.getAllEvents();
+                ResponseUtils.sendJsonResponse(resultSet, resp);
+                return;
             }
 
-            int maxPossiblePrice = 1000000000;
-            //if no price less than param, we just search for all event where price is less than
-            if (body.getPriceLessThan() == 0){
-                body.setPriceLessThan(maxPossiblePrice);
+            //if user wants to search only by location
+            if (body.getContainsExactWord() == null && body.getPriceGreaterThan() == 0
+                    && body.getPriceLessThan() == 0 && body.getLocation() != null){
+                /**
+                 * Search
+                 */
+                ResultSet resultSet = db.searchByLocation(body.getLocation());
+                ResponseUtils.sendJsonResponse(resultSet, resp);
+                return;
             }
 
-            db.searchEvents (body);
+            //if user wants to search only by location
+            if (body.getContainsExactWord() != null && body.getPriceGreaterThan() == 0
+                    && body.getPriceLessThan() == 0 && body.getLocation() == null){
+                /**
+                 * Search
+                 */
+                ResultSet resultSet = db.searchByWord(body.getContainsExactWord());
+                ResponseUtils.sendJsonResponse(resultSet, resp);
+                return;
+            }
+
+            //if user has given both a search term and location
+            if (body.getContainsExactWord() == null && body.getLocation() == null){
+                int maxPossiblePrice = 1000000000;
+                //if no price less than param, we just search for all event where price is less than
+                if (body.getPriceLessThan() == 0){
+                    body.setPriceLessThan(maxPossiblePrice);
+                }
+
+                //min price is 0 by default so we do not explicitly change that
+                ResultSet resultSet = db.searchByPrice(body.getPriceLessThan(), body.getPriceGreaterThan());
+                ResponseUtils.sendJsonResponse(resultSet, resp);
+                return;
+            }
+
+            //if user has given both a search term and location
+            if (body.getContainsExactWord() != null && body.getLocation() != null){
+                int maxPossiblePrice = 1000000000;
+                //if no price less than param, we just search for all event where price is less than
+                if (body.getPriceLessThan() == 0){
+                    body.setPriceLessThan(maxPossiblePrice);
+                }
+
+                //min price is 0 by default so we do not explicitly change that
+                ResultSet resultSet = db.searchByWordLocationAndPrice(body.getContainsExactWord(), body.getLocation(), body.getPriceLessThan(), body.getPriceGreaterThan());
+                ResponseUtils.sendJsonResponse(resultSet, resp);
+                return;
+            }
+
+
+
+
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

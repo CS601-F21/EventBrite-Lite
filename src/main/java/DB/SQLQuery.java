@@ -63,6 +63,13 @@ public class SQLQuery {
         return executeFetchQuery(query);
     }
 
+    public ResultSet searchByLocation (String location) throws SQLException {
+        String query = "SELECT * FROM Events WHERE Location = ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setString(1, location);
+        return statement.executeQuery();
+    }
+
     /**
      * Method to insert a new Event
      * @param event
