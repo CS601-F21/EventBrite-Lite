@@ -28,7 +28,6 @@ public class SearchEventServlet extends HttpServlet {
      *      GET /search
      *          {
      *              containsExactWord : {title should have this exact word}
-     *              priceGreaterThan : {price should be greater than this}
      *              priceLessThan : {price should be less than this}
      *              location : {location of the desired event}\
      *          }
@@ -47,69 +46,65 @@ public class SearchEventServlet extends HttpServlet {
             Gson gson = new Gson();
             SearchBody body = gson.fromJson(requestStr, SearchBody.class);
 
-            //if no search params were given
-            if (body.getContainsExactWord() == null && body.getPriceGreaterThan() == 0
-                && body.getPriceLessThan() == 0 && body.getLocation() == null){
+            ResultSet resultSet; //we will use this to send out the output
+
+            //if no search params were given, we return all events (000)
+            if (body.getContainsExactWord() == null && body.getPriceLessThan() == 0 && body.getLocation() == null){
                 /**
                  * Search
                  */
-                ResultSet resultSet = db.getAllEvents();
+                resultSet = db.getAllEvents();
                 ResponseUtils.sendJsonResponse(resultSet, resp);
                 return;
             }
 
-            //if user wants to search only by location
-            if (body.getContainsExactWord() == null && body.getPriceGreaterThan() == 0
-                    && body.getPriceLessThan() == 0 && body.getLocation() != null){
+            //if user wants to search only by location (001)
+            if (body.getContainsExactWord() == null && body.getLocation() != null){
                 /**
                  * Search
                  */
-                ResultSet resultSet = db.searchByLocation(body.getLocation());
-                ResponseUtils.sendJsonResponse(resultSet, resp);
-                return;
-            }
-
-            //if user wants to search only by location
-            if (body.getContainsExactWord() != null && body.getPriceGreaterThan() == 0
-                    && body.getPriceLessThan() == 0 && body.getLocation() == null){
-                /**
-                 * Search
-                 */
-                ResultSet resultSet = db.searchByWord(body.getContainsExactWord());
-                ResponseUtils.sendJsonResponse(resultSet, resp);
-                return;
-            }
-
-            //if user has given both a search term and location
-            if (body.getContainsExactWord() == null && body.getLocation() == null){
-                int maxPossiblePrice = 1000000000;
-                //if no price less than param, we just search for all event where price is less than
                 if (body.getPriceLessThan() == 0){
-                    body.setPriceLessThan(maxPossiblePrice);
+                    resultSet = db.searchByLocation(body.getLocation());
+                } else  { //(101)
+                    resultSet = db.searchByPriceAndLocation(body.getLocation(), body.getPriceLessThan());
                 }
 
-                //min price is 0 by default so we do not explicitly change that
-                ResultSet resultSet = db.searchByPrice(body.getPriceLessThan(), body.getPriceGreaterThan());
                 ResponseUtils.sendJsonResponse(resultSet, resp);
                 return;
             }
 
-            //if user has given both a search term and location
-            if (body.getContainsExactWord() != null && body.getLocation() != null){
-                int maxPossiblePrice = 1000000000;
-                //if no price less than param, we just search for all event where price is less than
+            //if user wants to search only by word (010)
+            if (body.getContainsExactWord() != null && body.getLocation() == null){
+                /**
+                 * Search
+                 */
                 if (body.getPriceLessThan() == 0){
-                    body.setPriceLessThan(maxPossiblePrice);
+                    resultSet = db.searchByWord(body.getContainsExactWord());
+                } else  { //(110)
+                    resultSet = db.searchByPriceAndWord(body.getContainsExactWord(), body.getPriceLessThan());
                 }
 
-                //min price is 0 by default so we do not explicitly change that
-                ResultSet resultSet = db.searchByWordLocationAndPrice(body.getContainsExactWord(), body.getLocation(), body.getPriceLessThan(), body.getPriceGreaterThan());
                 ResponseUtils.sendJsonResponse(resultSet, resp);
                 return;
             }
 
+            //if user wants to search by price (100)
+            if (body.getContainsExactWord() == null && body.getLocation() == null && body.getPriceLessThan() != 0){
+                //min price is 0 by default so we do not explicitly change that
+                resultSet = db.searchByPrice(body.getPriceLessThan());
+                ResponseUtils.sendJsonResponse(resultSet, resp);
+                return;
+            }
 
-
+            //if none of the if conditions were satisfied till now (111) then the user has given all the word and the
+            //location, we check whether they have given the price as well, if yes then fine, else we set the price to something
+            //very high
+            //this way we do not explicitly check for whether the user has given the price or not
+            if (body.getPriceLessThan() == 0){
+                body.setPriceLessThan(1000000000);
+            }
+            resultSet = db.searchByPriceLocationWord(body.getPriceLessThan(), body.getLocation(), body.getContainsExactWord());
+            ResponseUtils.sendJsonResponse(resultSet, resp);
 
         } catch (IOException e) {
             e.printStackTrace();

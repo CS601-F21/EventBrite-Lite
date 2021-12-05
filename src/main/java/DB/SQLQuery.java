@@ -52,6 +52,8 @@ public class SQLQuery {
         return statement.executeQuery();
     }
 
+
+
     /**
      * Method to get a ResultSet of all events and which users
      * are attending the event
@@ -67,6 +69,47 @@ public class SQLQuery {
         String query = "SELECT * FROM Events WHERE Location = ?";
         PreparedStatement statement = con.prepareStatement(query);
         statement.setString(1, location);
+        return statement.executeQuery();
+    }
+
+    public ResultSet searchByPriceAndLocation (String location, int price) throws SQLException {
+        String query = "SELECT * FROM Events WHERE Location = ? AND Price <= ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setString(1, location);
+        statement.setInt(1, price);
+        return statement.executeQuery();
+    }
+
+    //https://stackoverflow.com/a/17322336/13311516
+    public ResultSet searchByWord (String word) throws SQLException {
+        String query = "SELECT * FROM Events WHERE NAME LIKE ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setString(1, word + "%");
+        return statement.executeQuery();
+    }
+
+    public ResultSet searchByPriceAndWord (String word, int price) throws SQLException {
+        String query = "SELECT * FROM Events WHERE NAME LIKE ? AND Price <= ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setString(1, word + "%");
+        statement.setInt(2, price);
+        return statement.executeQuery();
+    }
+
+    public ResultSet searchByPrice (int price) throws SQLException {
+        String query = "SELECT * FROM Events WHERE Price <= ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setInt(1, price);
+        return statement.executeQuery();
+    }
+
+    //https://stackoverflow.com/a/29049440/13311516
+    public ResultSet searchByPriceLocationWord (int price, String location, String word) throws SQLException {
+        String query = "SELECT * FROM Events WHERE Price <= ? AND Location = ? AND Name Like ?";
+        PreparedStatement statement = con.prepareStatement(query);
+        statement.setInt(1, price);
+        statement.setString(2, location);
+        statement.setString(3, word + "%");
         return statement.executeQuery();
     }
 
@@ -364,7 +407,6 @@ public class SQLQuery {
         int i = statement.executeUpdate();
         return i > 0;
     }
-
 
 }
 
