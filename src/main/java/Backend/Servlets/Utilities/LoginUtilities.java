@@ -119,7 +119,8 @@ public class LoginUtilities {
      * @return
      */
     public static HashMap<String, String> verifyTokenResponse(Map<String, Object> map, String sessionId) {
-
+        LOGGER.info("Payload received is");
+        LOGGER.info(map);
         // verify ok: true
         if(!map.containsKey(LoginServerConstants.OK_KEY) || !(boolean)map.get(LoginServerConstants.OK_KEY)) {
             LOGGER.info("Verification : Response does not contain the 'ok' key or the 'ok' response object is false");
@@ -138,6 +139,9 @@ public class LoginUtilities {
 //        String idToken = URLDecoder.decode((String)map.get("id_token"), StandardCharsets.UTF_8);
         String idToken = (String)map.get("id_token");
         Map<String, Object> payloadMap = decodeIdTokenPayload(idToken);
+
+        LOGGER.info("Payload map is");
+        LOGGER.info(payloadMap);
 
         //verify nonce
         String expectedNonce = generateNonce(sessionId);
@@ -169,7 +173,7 @@ public class LoginUtilities {
      * @param idToken
      * @return
      */
-    private static Map<String, Object> decodeIdTokenPayload(String idToken) {
+    public static Map<String, Object> decodeIdTokenPayload(String idToken) {
         // Decoding process taken from:
         // https://www.baeldung.com/java-jwt-token-decode
         String[] chunks = idToken.split("\\.");

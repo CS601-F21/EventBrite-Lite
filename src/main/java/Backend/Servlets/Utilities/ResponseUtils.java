@@ -4,8 +4,12 @@
  */
 package Backend.Servlets.Utilities;
 
-import Backend.Servlets.AllEventsServlet;
+import Backend.Servlets.RequestBodyObjects.User;
+import DB.SQLQuery;
+import com.google.gson.Gson;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -108,6 +112,7 @@ public class ResponseUtils {
         resp.setStatus(HttpStatus.OK_200);
         //setting response type
         resp.setContentType("application/json");
+        resp.setHeader("Access-Control-Allow-Origin", "*");
 
         //getting print writer, will send response via this
         PrintWriter out = resp.getWriter();
@@ -116,4 +121,31 @@ public class ResponseUtils {
         //flushing out the writer
         out.flush();
     }
+
+    public static boolean userAuthenticated (User user){
+        //checkinf firstName instead of id, because default value of int is 0, and we may have a user with id = 0;
+        try {
+            if (!user.getFirstName().isEmpty()){
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NullPointerException e){
+            return false;
+        }
+    }
+
+    public static User getUser (HttpServletRequest req) throws IOException, SQLException {
+        String sessionId = req.getParameter("sessionid");
+        HashMap<String, String> userInfo =  (HashMap<String, String>) req.getServletContext().getAttribute(sessionId);
+        LOGGER.info("Got user info as ");
+        LOGGER.info(userInfo);
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(userInfo);
+        Gson gson = new Gson();
+        User user = gson.fromJson(json, User.class);
+        return user;
+    }
+
+
 }

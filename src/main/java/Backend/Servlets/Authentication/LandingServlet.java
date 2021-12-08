@@ -3,7 +3,7 @@
  * Purpose : This is the page the user will land on when they want to log in
  */
 
-package Backend.Servlets;
+package Backend.Servlets.Authentication;
 
 import Backend.Servlets.Utilities.LoginServerConstants;
 import Backend.Servlets.Utilities.LoginUtilities;
@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.server.session.Session;
 
 
 import java.io.IOException;

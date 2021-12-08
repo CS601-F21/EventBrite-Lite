@@ -4,6 +4,7 @@
  */
 package Backend.Servlets;
 
+import Backend.Servlets.RequestBodyObjects.User;
 import Backend.Servlets.Utilities.ResponseUtils;
 import DB.SQLQuery;
 import jakarta.servlet.ServletException;
@@ -26,7 +27,7 @@ public class EventsUserAttending extends HttpServlet {
      * Response is a json of all events a particular user will be attending
      * The uri will contain the userId parameter, which we will then extract and query the database with
      * Sample URI :
-     *      GET /userevents?userId={id}
+     *      GET /userevents?sessionid={sessionid}
      * @param req
      * @param resp
      * @throws ServletException
@@ -35,10 +36,13 @@ public class EventsUserAttending extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
-
-            Integer userId = Integer.parseInt(req.getParameter("userId"));
+            User user = ResponseUtils.getUser(req);
+            if (!ResponseUtils.userAuthenticated(user)){
+                ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
+                return;
+            }
             //sql query
-            ResultSet resultSet = db.getEventsUserAttending(userId);
+            ResultSet resultSet = db.getEventsUserAttending(user.getId());
             //helper method to send resultSet as a json object
             ResponseUtils.sendJsonResponse(resultSet, resp);
         } catch (SQLException e) {

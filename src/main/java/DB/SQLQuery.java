@@ -346,6 +346,7 @@ public class SQLQuery {
     }
 
     public boolean checkUserHasTicket (int userId, int eventId) throws SQLException {
+        LOGGER.info("SQL Got user id " + userId + " and event id " + eventId);
         String query = "SELECT * FROM Event_Attendance WHERE User_id = ? AND Event_id = ?";
         PreparedStatement statement = con.prepareStatement(query);
         statement.setInt(1, userId);

@@ -1,4 +1,4 @@
-package Backend.Servlets;
+package Backend.Servlets.Authentication;
 
 import Backend.Servlets.Utilities.LoginServerConstants;
 import jakarta.servlet.ServletException;

@@ -4,6 +4,8 @@
  */
 package Backend.Servlets;
 
+import Backend.JWT.TokenUtils;
+import Backend.Servlets.RequestBodyObjects.User;
 import Backend.Servlets.Utilities.ResponseUtils;
 import DB.SQLQuery;
 import jakarta.servlet.ServletException;
@@ -23,7 +25,7 @@ public class UserInformationServlet extends HttpServlet {
     /**
      * This API will be called when the client wants to get information about a particular user
      * Sample URI
-     *      /userinfo?id={id}
+     *      /userinfo?sessionid={sessionid}
      * @param req
      * @param resp
      * @throws ServletException
@@ -32,7 +34,13 @@ public class UserInformationServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
-            int userId = Integer.parseInt(req.getParameter("id"));
+            User user = ResponseUtils.getUser(req);
+            if (!ResponseUtils.userAuthenticated(user)){
+                ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
+                return;
+            }
+
+            int userId = user.getId();
             boolean userExist = db.checkUserExistWithId(userId);
 
             if (!userExist) {

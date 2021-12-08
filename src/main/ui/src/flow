@@ -1,0 +1,31 @@
+CLient --> slack
+slack --> redirect URL (client)
+redirect URL ? code = xx 
+    API call to server code =xxx 
+        server will verify
+            and return User object to client
+                        --> JWT (nothing but encrypted form of user Object)
+
+{
+    username : aleberto
+    id : 3344 
+}
+
+    client side storage
+        localStorage / sessionStorage
+        cookies (secured) httplny
+            set from server side
+            automatically included on every request to that server
+
+client ---> /api/events
+header: authorization : bearer {JWT}
+
+
+
+fact 1 : store user object on client side (preferably encrypted)
+fact2 : send the auth token (encrypted user object) 
+fact 3: server will verify the token sent in auth header
+    1. it has not been tempered with
+    2. the user (session) has not expired
+    if fact 3 passes then only proceed with actual controller / api call. 
+    --> filter / interceptor

@@ -4,6 +4,8 @@
  */
 package Backend.Servlets;
 
+import Backend.JWT.TokenUtils;
+import Backend.Servlets.RequestBodyObjects.User;
 import Backend.Servlets.Utilities.ResponseUtils;
 import DB.SQLQuery;
 import jakarta.servlet.ServletException;
@@ -29,7 +31,7 @@ public class PurchaseTicketServlet extends HttpServlet {
     /**
      * POST Request, URI will have 2 params the userId and the eventId
      *      Sample URI :
-     *            POST /purchaseticket?userid={userId}&eventid={eventid}
+     *            POST /purchaseticket?sessionid={sessionid}&eventid={eventid}
      * @param req
      * @param resp
      * @throws ServletException
@@ -39,7 +41,13 @@ public class PurchaseTicketServlet extends HttpServlet {
 
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
-            int userId = Integer.parseInt(req.getParameter("userid"));
+            User user = ResponseUtils.getUser(req);
+            if (!ResponseUtils.userAuthenticated(user)){
+                ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
+                return;
+            }
+
+            int userId = user.getId();
             int eventId = Integer.parseInt(req.getParameter("eventid"));
 
             LOGGER.info("Got user id as " + userId);

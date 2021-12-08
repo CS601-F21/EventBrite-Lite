@@ -4,6 +4,7 @@
  */
 package Backend.Servlets;
 
+import Backend.Servlets.RequestBodyObjects.User;
 import Backend.Servlets.Utilities.ResponseUtils;
 import DB.SQLQuery;
 import jakarta.servlet.ServletException;
@@ -16,6 +17,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class EventsByUserServlet extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(EventsByUserServlet.class);
@@ -24,7 +26,7 @@ public class EventsByUserServlet extends HttpServlet {
      * Response is a JSON object with all events created by a particular user
      * The uri will contain the userId parameter, which we will then extract and query the database with
      * Sample URI :
-     *      GET /eventsbyuser?userId={id}
+     *      GET /eventsbyuser?sessionid={id}
      * @param req
      * @param resp
      * @throws ServletException
@@ -33,10 +35,16 @@ public class EventsByUserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
+            User user = ResponseUtils.getUser(req);
+            if (!ResponseUtils.userAuthenticated(user)){
+                ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
+                return;
+            }
 
-            Integer userId = Integer.parseInt(req.getParameter("userId"));
+            LOGGER.info("User is ");
+            LOGGER.info(user.toString());
             //sql query
-            ResultSet resultSet = db.getEventsByUser(userId);
+            ResultSet resultSet = db.getEventsByUser(user.getId());
             //helper method to send resultSet as a json object
             ResponseUtils.sendJsonResponse(resultSet, resp);
         } catch (SQLException e) {

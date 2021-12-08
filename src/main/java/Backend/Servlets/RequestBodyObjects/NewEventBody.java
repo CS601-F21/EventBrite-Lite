@@ -8,6 +8,7 @@ public class NewEventBody {
     private int organizer;
     private String date;
     private int price;
+    private int id;
 
     public NewEventBody(String name, String location, boolean attending, int capacity, int organizer, String date, int price) {
         this.name = name;
@@ -45,6 +46,10 @@ public class NewEventBody {
 
     public int getPrice() {
         return price;
+    }
+
+    public void setOrganizer(int organizer) {
+        this.organizer = organizer;
     }
 
     @Override

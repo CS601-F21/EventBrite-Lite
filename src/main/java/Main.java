@@ -1,5 +1,10 @@
+import Backend.JWT.TokenUtils;
 import Backend.MainServer;
 import Backend.Servlets.*;
+import Backend.Servlets.Authentication.GetSessionIDServlet;
+import Backend.Servlets.Authentication.LandingServlet;
+import Backend.Servlets.Authentication.LoginServlet;
+import Backend.Servlets.Authentication.LogoutServlet;
 import Config.ConfigurationManager;
 import DB.DBConnection;
 import DB.SQLQuery;
@@ -8,6 +13,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -72,6 +79,9 @@ public class Main {
             //response will be a json object informing the front-end whether the event creation was successful or not
             //servlet will only handle POST Request, details about the request in the class
             server.addServlet(SearchEventServlet.class, "/search");
+            //response will be a json object informing the front-end whether the event creation was successful or not
+            //servlet will only handle POST Request, details about the request in the class
+            server.addServlet(GetSessionIDServlet.class, "/sessionid");
 
             //adding the database connection as an attribute to the context
             server.setDBConnection("db", query);
@@ -84,6 +94,5 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }

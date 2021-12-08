@@ -4,26 +4,30 @@
  * Purpose : Handles the Login
  */
 
-package Backend.Servlets;
+package Backend.Servlets.Authentication;
 
-import Backend.Servlets.Utilities.ClientInfo;
-import Backend.Servlets.Utilities.HTTPFetcher;
-import Backend.Servlets.Utilities.LoginServerConstants;
-import Backend.Servlets.Utilities.LoginUtilities;
+import Backend.JWT.TokenUtils;
+import Backend.Servlets.RequestBodyObjects.User;
+import Backend.Servlets.Utilities.*;
 import DB.SQLQuery;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.LogManager;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+
 
 /**
  * Handles the login for the user. Once a user has successfully been logged in, we check the database for whether the user
@@ -39,9 +43,12 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         // retrieve the ID of this session
-        String sessionId = req.getSession(true).getId();
+//        String sessionId = req.getSession(true).getId();
+//        String sessionId = req.getParameter("sessionId");
+        String code  = req.getParameter("code");
+        LOGGER.info("Code received from ui is " + code);
 
-        LOGGER.info("Session id in the Login Page servlet is " + sessionId);
+//        LOGGER.info("Session id in the Login Page servlet is " + sessionId);
 
         // determine whether the user is already authenticated
         Object clientInfoObj = req.getSession().getAttribute(LoginServerConstants.CLIENT_INFO_KEY);
@@ -58,11 +65,6 @@ public class LoginServlet extends HttpServlet {
         // retrieve the config info from the context
         HashMap<String, String> config = (HashMap<String, String>) req.getServletContext().getAttribute("slackAuthentication");
 
-        // retrieve the code provided by Slack
-        String code = req.getParameter(LoginServerConstants.CODE_KEY);
-
-        LOGGER.info("Code received from slack is " + code);
-
         // generate the url to use to exchange the code for a token:
         // After the user successfully grants your app permission to access their Slack profile,
         // they'll be redirected back to your service along with the typical code that signifies
@@ -74,15 +76,15 @@ public class LoginServlet extends HttpServlet {
         String responseString = HTTPFetcher.doGet(url, null);
         LOGGER.info("HTTPFetcher has gotten response ");
         Map<String, Object> response = LoginUtilities.jsonStrToMap(responseString);
-        LOGGER.info("Response converted to map the keys are " + response.keySet());
+        Map<String, Object> clientInfo = LoginUtilities.decodeIdTokenPayload((String)response.get("id_token"));
 
-        /**
-         * The keys of the HashMap are
-         * First_Name
-         * Last_Name
-         * Email
-         */
-        HashMap<String,String> clientInfo = LoginUtilities.verifyTokenResponse(response, sessionId);
+        LOGGER.info("Response converted to map the keys are " + clientInfo.keySet());
+//        for (String keys : clientInfo.keySet()){
+//            LOGGER.info(keys);
+//            LOGGER.info(clientInfo.get(keys));
+//            LOGGER.info("---------------");
+//        }
+
 
         if(clientInfo == null) {
             resp.setStatus(HttpStatus.OK_200);
@@ -92,9 +94,9 @@ public class LoginServlet extends HttpServlet {
         } else {
             try {
                 SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
-                String firstName = clientInfo.get("First_Name");
-                String lastName = clientInfo.get("Last_Name");
-                String email = clientInfo.get("Email");
+                String firstName = (String)clientInfo.get("given_name");
+                String lastName = (String)clientInfo.get("family_name");
+                String email = (String)clientInfo.get("email");
 
                 if (!db.userExists(firstName, lastName, email)) {
                     //the cols in the table are the firstName, lastName, preferredName, email
@@ -102,13 +104,29 @@ public class LoginServlet extends HttpServlet {
                     db.insertUser(firstName, lastName, firstName, email);
                 }
 
+                int userId = db.getUserIdFromEmail(email);
 
-                req.getSession().setAttribute(LoginServerConstants.CLIENT_INFO_KEY, clientInfo);
-                resp.setStatus(HttpStatus.OK_200);
-                resp.getWriter().println(LoginServerConstants.PAGE_HEADER);
-                resp.getWriter().println("<h1>Hello, " + clientInfo.get("First_Name") + "</h1>");
-                resp.getWriter().println("<p><a href=\"/logout\">Signout</a>");
-                resp.getWriter().println(LoginServerConstants.PAGE_FOOTER);
+                //getting the user info
+                ResultSet resultSet = db.getUserInfo(userId);
+                ArrayList<HashMap<String, String>> jsonList = ResponseUtils.resultSetToJson(resultSet);
+                HashMap<String, String> userInfo = jsonList.get(0);
+//                String JWTToken = TokenUtils.generateToken(userId, firstName, lastName, userInfo.get("Preferred_Name"), email);
+//                //inserting the JWT token into the body as well, this will then be set as the browser cookie in the front-end server
+                String sessionId = req.getSession(true).getId();
+                LOGGER.info("Setting session attribute " + sessionId);
+                userInfo.put("sessionid", sessionId);
+                req.getServletContext().setAttribute(sessionId, userInfo);
+
+//                resp.setHeader("Set-Cookie", "jwt=" + JWTToken + "; Secure; HttpOnly; SameSite=None; Path=/login; Max-Age=99999999;");
+//                LOGGER.info("Generated token " + JWTToken);
+//                LOGGER.info("Reverse is  " + TokenUtils.decodeToken(JWTToken));
+                resp.setHeader("Access-Control-Allow-Origin", "*");
+
+                ObjectMapper mapper = new ObjectMapper();
+                String json = mapper.writeValueAsString(userInfo);
+                LOGGER.info("Object mapped is ");
+                LOGGER.info(json);
+                ResponseUtils.send200JsonResponse(json, resp);
             } catch (SQLException e) {
                 e.printStackTrace();
             }

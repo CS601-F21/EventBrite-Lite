@@ -4,6 +4,8 @@
  */
 package Backend.Servlets;
 
+import Backend.JWT.TokenUtils;
+import Backend.Servlets.RequestBodyObjects.User;
 import Backend.Servlets.Utilities.ResponseUtils;
 import DB.SQLQuery;
 import jakarta.servlet.ServletException;
@@ -23,7 +25,7 @@ public class UpdatePreferredNameServlet extends HttpServlet {
      * API to update the preferred name of the user, since we only have two params and both are safe
      * we can pass them in the url itself
      * Sample api :
-     *          /updateusername?id={userId}&pref={newname}
+     *          /updateusername?sessionid={sessionid}&pref={newname}
      * @param req
      * @param resp
      * @throws ServletException
@@ -32,7 +34,13 @@ public class UpdatePreferredNameServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
-            int userId = Integer.parseInt(req.getParameter("id"));
+            User user = ResponseUtils.getUser(req);
+            if (!ResponseUtils.userAuthenticated(user)){
+                ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
+                return;
+            }
+
+            int userId = user.getId();
             String pref = req.getParameter("pref");
 
             boolean success = db.updateUserName(userId, pref);
