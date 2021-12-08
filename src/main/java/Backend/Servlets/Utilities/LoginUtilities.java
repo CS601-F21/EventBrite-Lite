@@ -50,11 +50,11 @@ public class LoginUtilities {
      */
     public static String generateSlackAuthorizeURL(String clientId, String state, String nonce, String redirectURI) {
 
-        LOGGER.info("Generating authorize url, ");
-        LOGGER.info("Client id received is " + clientId);
-        LOGGER.info("State received is " + state);
-        LOGGER.info("Nonce received is " + nonce);
-        LOGGER.info("RedirectURI received is " + redirectURI);
+//        LOGGER.info("Generating authorize url, ");
+//        LOGGER.info("Client id received is " + clientId);
+//        LOGGER.info("State received is " + state);
+//        LOGGER.info("Nonce received is " + nonce);
+//        LOGGER.info("RedirectURI received is " + redirectURI);
 
         String url = String.format("https://%s/%s?%s=%s&%s=%s&%s=%s&%s=%s&%s=%s&%s=%s",
                 LoginServerConstants.HOST,

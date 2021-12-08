@@ -43,8 +43,6 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         // retrieve the ID of this session
-//        String sessionId = req.getSession(true).getId();
-//        String sessionId = req.getParameter("sessionId");
         String code  = req.getParameter("code");
         LOGGER.info("Code received from ui is " + code);
 
@@ -76,6 +74,8 @@ public class LoginServlet extends HttpServlet {
         String responseString = HTTPFetcher.doGet(url, null);
         LOGGER.info("HTTPFetcher has gotten response ");
         Map<String, Object> response = LoginUtilities.jsonStrToMap(responseString);
+        LOGGER.info("Response is ");
+        LOGGER.info(response);
         Map<String, Object> clientInfo = LoginUtilities.decodeIdTokenPayload((String)response.get("id_token"));
 
         LOGGER.info("Response converted to map the keys are " + clientInfo.keySet());
@@ -113,7 +113,7 @@ public class LoginServlet extends HttpServlet {
 //                String JWTToken = TokenUtils.generateToken(userId, firstName, lastName, userInfo.get("Preferred_Name"), email);
 //                //inserting the JWT token into the body as well, this will then be set as the browser cookie in the front-end server
                 String sessionId = req.getSession(true).getId();
-                LOGGER.info("Setting session attribute " + sessionId);
+//                LOGGER.info("Setting session attribute " + sessionId);
                 userInfo.put("sessionid", sessionId);
                 req.getServletContext().setAttribute(sessionId, userInfo);
 

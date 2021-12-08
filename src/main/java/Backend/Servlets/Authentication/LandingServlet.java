@@ -29,7 +29,7 @@ public class LandingServlet extends HttpServlet {
 
         // retrieve the ID of this session
         String sessionId = req.getSession(true).getId();
-        LOGGER.info("Session id in the Landing Page servlet is " + sessionId);
+//        LOGGER.info("Session id in the Landing Page servlet is " + sessionId);
 
         // determine whether the user is already authenticated
         Object clientInfoObj = req.getSession().getAttribute(LoginServerConstants.CLIENT_INFO_KEY);

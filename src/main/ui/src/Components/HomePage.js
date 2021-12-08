@@ -1,10 +1,13 @@
 import react, { Component, useState } from "react";
 import { useSelector } from "react-redux";
 import React from "react";
+import LoginComponent from "./LoginComponent";
+import TopPane from "./TopPane";
+import LowerPane from "./LowerPane";
 
 const HomePage = (props) => {
   const { events, setEvents } = props;
-  console.log("events", events);
+  // console.log("events", events);
 
   function addEvent() {
     // make api call
@@ -14,18 +17,10 @@ const HomePage = (props) => {
       .then((res) => res.json())
       .then((json) => setEvents([...props.events, ...json]));
   }
-
   return (
-    <div>
-      <div>
-        {props.events.map((e) => (
-          <p>{e.Name}</p>
-        ))}
-      </div>
-      <div style={{ cursor: "pointer" }} onClick={() => props.setEvents([])}>
-        set events
-      </div>
-      <button onClick={addEvent}>add event</button>
+    <div className="homePage">
+      <TopPane />
+      <LowerPane />
     </div>
   );
 };
