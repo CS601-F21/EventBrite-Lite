@@ -5,6 +5,7 @@ import Backend.Servlets.Authentication.GetSessionIDServlet;
 import Backend.Servlets.Authentication.LandingServlet;
 import Backend.Servlets.Authentication.LoginServlet;
 import Backend.Servlets.Authentication.LogoutServlet;
+import Backend.Servlets.RequestBodyObjects.SearchBody;
 import Config.ConfigurationManager;
 import DB.DBConnection;
 import DB.SQLQuery;
@@ -13,6 +14,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import org.apache.log4j.BasicConfigurator;

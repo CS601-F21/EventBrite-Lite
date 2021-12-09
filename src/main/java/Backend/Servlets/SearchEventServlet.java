@@ -39,33 +39,39 @@ public class SearchEventServlet extends HttpServlet {
      * @throws ServletException
      */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
             String requestStr = IOUtils.toString(req.getInputStream());
+            LOGGER.info("Received following request");
+            LOGGER.info(requestStr);
             Gson gson = new Gson();
             SearchBody body = gson.fromJson(requestStr, SearchBody.class);
 
             ResultSet resultSet; //we will use this to send out the output
+            resp.setHeader("Access-Control-Allow-Origin", "*");
 
             //if no search params were given, we return all events (000)
-            if (body.getContainsExactWord() == null && body.getPriceLessThan() == 0 && body.getLocation() == null){
+            if (body.getContainsExactWord().isEmpty() && body.getPriceLessThan() == 0 && body.getLocation().isEmpty()){
                 /**
                  * Search
                  */
+                LOGGER.info("No search params given");
                 resultSet = db.getAllEvents();
                 ResponseUtils.sendJsonResponse(resultSet, resp);
                 return;
             }
 
             //if user wants to search only by location (001)
-            if (body.getContainsExactWord() == null && body.getLocation() != null){
+            if (body.getContainsExactWord().isEmpty() && !body.getLocation().isEmpty()){
                 /**
                  * Search
                  */
                 if (body.getPriceLessThan() == 0){
+                    LOGGER.info("Location is " + body.getLocation() + " and exact term search and price are empty");
                     resultSet = db.searchByLocation(body.getLocation());
                 } else  { //(101)
+                    LOGGER.info("Location is " + body.getLocation() + " and exact term search is empty and price is" + body.getPriceLessThan());
                     resultSet = db.searchByPriceAndLocation(body.getLocation(), body.getPriceLessThan());
                 }
 
@@ -74,13 +80,15 @@ public class SearchEventServlet extends HttpServlet {
             }
 
             //if user wants to search only by word (010)
-            if (body.getContainsExactWord() != null && body.getLocation() == null){
+            if (!body.getContainsExactWord().isEmpty() && body.getLocation().isEmpty()){
                 /**
                  * Search
                  */
                 if (body.getPriceLessThan() == 0){
+                    LOGGER.info("Exact term is " + body.getContainsExactWord() + " and location and price are empty");
                     resultSet = db.searchByWord(body.getContainsExactWord());
                 } else  { //(110)
+                    LOGGER.info("Exact term is " + body.getContainsExactWord() + " and location and price is " +body.getPriceLessThan());
                     resultSet = db.searchByPriceAndWord(body.getContainsExactWord(), body.getPriceLessThan());
                 }
 
@@ -89,12 +97,16 @@ public class SearchEventServlet extends HttpServlet {
             }
 
             //if user wants to search by price (100)
-            if (body.getContainsExactWord() == null && body.getLocation() == null && body.getPriceLessThan() != 0){
+            if (body.getContainsExactWord().isEmpty() && body.getLocation().isEmpty() && body.getPriceLessThan() > 0){
                 //min price is 0 by default so we do not explicitly change that
+                LOGGER.info("Only price = " + body.getPriceLessThan() + " is present");
                 resultSet = db.searchByPrice(body.getPriceLessThan());
                 ResponseUtils.sendJsonResponse(resultSet, resp);
                 return;
             }
+
+            LOGGER.info("Received following body");
+            LOGGER.info(body.toString());
 
             //if none of the if conditions were satisfied till now (111) then the user has given all the word and the
             //location, we check whether they have given the price as well, if yes then fine, else we set the price to something

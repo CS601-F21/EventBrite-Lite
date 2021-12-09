@@ -14,10 +14,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class UserInformationServlet extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(UserInformationServlet.class);
@@ -35,20 +37,17 @@ public class UserInformationServlet extends HttpServlet {
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
             User user = ResponseUtils.getUser(req);
+            resp.setHeader("Access-Control-Allow-Origin", "*");
             if (!ResponseUtils.userAuthenticated(user)){
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
                 return;
             }
-
-            int userId = user.getId();
-            boolean userExist = db.checkUserExistWithId(userId);
-
-            if (!userExist) {
-                ResponseUtils.send200OkResponse(false, "User does not exist", resp);
-            }
-
-            ResultSet result = db.getUserInfo(userId);
-            ResponseUtils.sendJsonResponse(result, resp);
+            user.setId(0);
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(user);
+            LOGGER.info("Response is ===> " + json);
+            ResponseUtils.send200JsonResponse(json, resp);
+//            ResponseUtils.sendJsonResponse(result, resp);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SQLException e) {

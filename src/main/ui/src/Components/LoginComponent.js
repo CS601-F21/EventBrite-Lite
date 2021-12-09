@@ -18,11 +18,11 @@ const LoginComponent = (props) => {
     const code = params.get("code");
     if (code == null) return;
     console.log("code received from slack is : " + code);
-    // response = await fetch("http://127.0.0.1:8080/sessionid");
+    // response = await fetch("http://localhost:8080/sessionid");
     // sessionId = await response.json();
     // console.log("Got session id as ");
     // console.log(sessionId);
-    response = await fetch("http://127.0.0.1:8080/login?code=" + code);
+    response = await fetch("http://localhost:8080/login?code=" + code);
     let info = await response.json();
     return info;
   };
@@ -42,13 +42,14 @@ const LoginComponent = (props) => {
       localStorage.setItem("sessionid", info.sessionid);
 
       window.history.pushState({}, document.title, "/"); //this is to ensure that the url remains clean afterwards
+      window.location.reload(); //to reload the page to update the state and reload the page
 
       // document.cookie = 'JWT='+info.JWT+ 'Secure; HttpOnly; SameSite=None; Max-Age=99999999;'
     });
   }
   return (
     <div className={["loginWrapper"].join(" ")}>
-      <div>Sign in</div>
+      <div className = "userInfo">Sign in</div>
       <a
         className={"loginbutton"}
         href="https://slack.com/openid/connect/authorize?scope=openid%20email%20profile&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Fe24d-2601-646-4200-e040-26dd-2ceb-b1b7-b6e5.ngrok.io&amp;client_id=2376352929024.2799261688930"

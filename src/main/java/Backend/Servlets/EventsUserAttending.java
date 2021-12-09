@@ -37,6 +37,7 @@ public class EventsUserAttending extends HttpServlet {
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
             User user = ResponseUtils.getUser(req);
+            resp.setHeader("Access-Control-Allow-Origin", "*");
             if (!ResponseUtils.userAuthenticated(user)){
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
                 return;

@@ -44,6 +44,7 @@ public class AllEventsServlet extends HttpServlet {
             //sql query
             ResultSet resultSet = db.getAllEvents();
             //helper method to send resultSet as a json object
+            resp.setHeader("Access-Control-Allow-Origin", "*");
             ResponseUtils.sendJsonResponse(resultSet, resp);
         } catch (SQLException e) {
             e.printStackTrace();

@@ -1,24 +1,25 @@
 import EventBlocks from "./EventBlocks";
 const LowerPane = (props) => {
-  return (
-    <div className="lowerPane">
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-      <EventBlocks />
-    </div>
-  );
+  const events = props.events;
+  const setEvents = props.setEvents;
+  let modifiableEvents = events;
+  modifiableEvents = modifiableEvents.map((event) => (
+    <EventBlocks
+      key={event.id}
+      name={event.Name}
+      attending={event.Attending}
+      capacity={event.Capacity}
+      date={event.Date}
+      location={event.Location}
+      id={event.id}
+      organizer={event.Organizer}
+      price={event.Price}
+
+      events = {props.events}
+      setEvents = {props.setEvents}
+    />
+  ));
+  return <div className="lowerPane">{modifiableEvents}</div>;
 };
 
 export default LowerPane;

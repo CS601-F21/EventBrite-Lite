@@ -70,6 +70,7 @@ public class CreateEventServlet extends HttpServlet {
             NewEventBody newEventBody = gson.fromJson(requestStr, NewEventBody.class);
             newEventBody.setOrganizer(organizerId);
             boolean success = db.insertEvent(newEventBody);
+            resp.setHeader("Access-Control-Allow-Origin", "*");
             ResponseUtils.send200OkResponse(success, null, resp);
         } catch (IOException e) {
             LOGGER.info("IO Exception");

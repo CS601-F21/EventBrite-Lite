@@ -41,8 +41,10 @@ public class PurchaseTicketServlet extends HttpServlet {
 
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
+            LOGGER.info("Got purchase request");
             User user = ResponseUtils.getUser(req);
             if (!ResponseUtils.userAuthenticated(user)){
+                LOGGER.info("User is not authenticated");
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
                 return;
             }

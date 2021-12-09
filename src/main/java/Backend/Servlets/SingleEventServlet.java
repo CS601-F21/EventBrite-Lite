@@ -35,6 +35,7 @@ public class SingleEventServlet extends HttpServlet {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
             Integer id = Integer.parseInt(req.getParameter("id"));
             ResultSet resultSet = db.getEventDetails(id);
+            resp.setHeader("Access-Control-Allow-Origin", "*");
             ResponseUtils.sendJsonResponse(resultSet, resp);
         } catch (SQLException e) {
             e.printStackTrace();

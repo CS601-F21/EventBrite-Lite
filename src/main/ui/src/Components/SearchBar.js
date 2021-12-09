@@ -1,7 +1,52 @@
 const SearchBar = (props) => {
+  const events = props.events;
+  const setEvents = props.setEvents;
+
+  function getAllEvents() {
+    /**return all events */
+    fetch("http://localhost:8080/allevents")
+      .then((res) => res.json())
+      .then((json) => setEvents([...json]));
+  }
+
+  function searchForEvents() {
+    let containsExactWord =
+      document.getElementsByClassName("searchByName")[0].value;
+    let location = document.getElementsByClassName("searchByLocation")[0].value;
+    let priceLessThan =
+      document.getElementsByClassName("searchByPrice")[0].value;
+    
+    if (priceLessThan == ""){
+      priceLessThan = 0;
+    }
+    console.log(
+      `contains word ${containsExactWord} -> location ${location} -> price less than ${priceLessThan}`
+    );
+
+    fetch("http://localhost:8080/search", {
+      method: "POST",
+      // mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "http://localhost:8080/search",
+        "Access-Control-Allow-Credentials": "true"
+
+      },
+      body: JSON.stringify({
+        'containsExactWord': containsExactWord,
+        'location': location,
+        'priceLessThan': priceLessThan
+      }),
+    })
+      .then((res) => res.json())
+      .then((json) => setEvents([...json]));
+  }
+
   return (
     <div className="searchWrapper">
-      <button className="resetSearch searchComponent">All Events</button>
+      <button className="resetSearch searchComponent" onClick={getAllEvents}>
+        All Events
+      </button>
       <input
         className="searchByName searchComponent"
         placeholder="Search By Name"
@@ -18,7 +63,12 @@ const SearchBar = (props) => {
         type="number"
         min="0"
       ></input>
-      <button className="submitSearch searchComponent">Go</button>
+      <button
+        className="submitSearch searchComponent"
+        onClick={searchForEvents}
+      >
+        Go
+      </button>
     </div>
   );
 };

@@ -76,7 +76,7 @@ public class SQLQuery {
         String query = "SELECT * FROM Events WHERE Location = ? AND Price <= ?";
         PreparedStatement statement = con.prepareStatement(query);
         statement.setString(1, location);
-        statement.setInt(1, price);
+        statement.setInt(2, price);
         return statement.executeQuery();
     }
 

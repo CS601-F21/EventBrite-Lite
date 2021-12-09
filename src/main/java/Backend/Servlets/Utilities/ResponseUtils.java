@@ -43,8 +43,11 @@ public class ResponseUtils {
     public static void sendJsonResponse (ResultSet resultSet, HttpServletResponse resp) throws SQLException, IOException {
         //getting list of all rows, each row is represented as a hashmap
         ArrayList<HashMap<String, String>> allRows = ResponseUtils.resultSetToJson(resultSet);
+        resp.setHeader("Access-Control-Allow-Origin", "*");
         //converting the arraylist to a json string
         String response = ResponseUtils.getResponse(allRows);
+        LOGGER.info("Response is");
+        LOGGER.info(response);
         //sending the response
         ResponseUtils.send200JsonResponse(response, resp);
     }
@@ -76,6 +79,7 @@ public class ResponseUtils {
 
     public static void send200OkResponse (boolean success, String message, HttpServletResponse resp) throws IOException {
         HashMap<String, String> responseMap = new HashMap<>();
+        resp.setHeader("Access-Control-Allow-Origin", "*");
 
         if (success) {
             /**
@@ -96,6 +100,8 @@ public class ResponseUtils {
         responseList.add(responseMap);
         //getting the json string
         String response =  ResponseUtils.getResponse(responseList);
+        LOGGER.info("Response sent is the following");
+        LOGGER.info(response);
         //sending the response
         ResponseUtils.send200JsonResponse(response, resp);
     }
@@ -137,6 +143,7 @@ public class ResponseUtils {
 
     public static User getUser (HttpServletRequest req) throws IOException, SQLException {
         String sessionId = req.getParameter("sessionid");
+        LOGGER.info("Got session id as " + sessionId);
         HashMap<String, String> userInfo =  (HashMap<String, String>) req.getServletContext().getAttribute(sessionId);
         LOGGER.info("Got user info as ");
         LOGGER.info(userInfo);

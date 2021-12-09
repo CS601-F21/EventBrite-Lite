@@ -1,6 +1,7 @@
 package Backend.Servlets.Authentication;
 
 import Backend.Servlets.Utilities.LoginServerConstants;
+import Backend.Servlets.Utilities.ResponseUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,8 @@ public class LogoutServlet extends HttpServlet {
         resp.getWriter().println(LoginServerConstants.PAGE_HEADER);
         resp.getWriter().println("<h1>Thanks for playing</h1>");
         resp.getWriter().println(LoginServerConstants.PAGE_FOOTER);
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        ResponseUtils.send200OkResponse(true, null, resp);
 
     }
 }

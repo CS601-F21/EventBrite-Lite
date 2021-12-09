@@ -7,20 +7,21 @@ import LowerPane from "./LowerPane";
 
 const HomePage = (props) => {
   const { events, setEvents } = props;
-  // console.log("events", events);
+  // console.log("events");
+  // console.log(events);
 
-  function addEvent() {
-    // make api call
-    // get response
+  // function addEvent() {
+  //   // make api call
+  //   // get response
 
-    fetch("http://localhost:8080/allevents")
-      .then((res) => res.json())
-      .then((json) => setEvents([...props.events, ...json]));
-  }
+  //   fetch("http://localhost:8080/allevents")
+  //     .then((res) => res.json())
+  //     .then((json) => setEvents([...props.events, ...json]));
+  // }
   return (
     <div className="homePage">
-      <TopPane />
-      <LowerPane />
+      <TopPane events={props.events} setEvents={props.setEvents} user = {props.user} setUser={props.setUser} />
+      <LowerPane events={props.events} setEvents={props.setEvents} />
     </div>
   );
 };
