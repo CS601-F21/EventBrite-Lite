@@ -2,12 +2,12 @@ package Backend.Servlets.RequestBodyObjects;
 
 public class TransferTicketBody {
     private int from;
-    private int eventid;
+    private int eventId;
     private String to;
 
     public TransferTicketBody(int from, int eventId, String email) {
         this.from = from;
-        this.eventid = eventId;
+        this.eventId = eventId;
         this.to = email;
     }
 
@@ -20,7 +20,7 @@ public class TransferTicketBody {
     }
 
     public int getEventId() {
-        return eventid;
+        return eventId;
     }
 
     public String getEmail() {
@@ -31,7 +31,7 @@ public class TransferTicketBody {
     public String toString() {
         return "TransferTicketBody{" +
                 "from=" + from +
-                ", eventid=" + eventid +
+                ", eventid=" + eventId +
                 ", email='" + to + '\'' +
                 '}';
     }

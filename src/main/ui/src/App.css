@@ -158,3 +158,87 @@ body,
   width: 100%;
   margin-left: 15%;
 }
+
+.displayScreen {
+  height: 100%;
+  display: flex;
+}
+
+.userInfoPane{
+  width: 30%;
+  margin-top: 4%;
+}
+
+.userNameAndNameChangePane {
+  height: 20%;
+}
+
+.userNamePanel {
+  margin: 2%;
+}
+
+.nameText {
+  margin: 0;
+  font-size: xx-large;
+}
+
+.changeNameDiv {
+  margin: 2%;
+  margin-top: 5%;
+  height: 10%;
+}
+
+.changeNameInput {
+  width: 90%;
+  height: 90%;
+}
+
+.changeNameSubmitButton {
+  height: 125%;
+}
+
+.createEventPane {
+  height: 78%;
+  margin-left: 3%;
+}
+
+.createEventText {
+  margin-bottom: 7%;
+}
+
+.newEventInput {
+  margin-top: 2%;
+  margin-bottom: 2%;
+  width: 90%;
+}
+
+#eventAttending{
+  width: 10%;
+}
+
+.userActionPane {
+  width: 70%;
+  margin-left: 10%;
+  margin-top: 5%;
+  height: 89%;
+  overflow: scroll;
+  margin-right: 2%;
+}
+
+.transferTicketLabel {
+  margin-left: 10%;
+}
+
+#transferTicket {
+   margin-left: 2%;
+   margin-top: 2%;
+   width: 45%;
+}
+
+/* .transferSubmitButton{
+  margin-left: 69%
+} */
+
+.userEventBlock{
+  width: 80%;
+}

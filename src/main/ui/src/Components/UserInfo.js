@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import UserInfoPane from './UserInfoPane';
-import UserActionPane from './UserActionPane';
+import UserActionPanel from './UserActionPanel';
 const UserInfo = (props) => {
     const sessionId = localStorage.getItem("sessionid");
+    const [userEvents, setUserEvents] = React.useState([]);
+    // console.log("---")
+    // console.log(userEvents)
+
     React.useEffect(() => {
         console.log(sessionId);
         fetch("http://localhost:8080/userinfo?sessionid="+sessionId, {
@@ -31,16 +35,29 @@ const UserInfo = (props) => {
           } else {
             localStorage.setItem("firstName", res.firstName);
             localStorage.setItem("lastName", res.lastName);
-            localStorage.setItem("preferredName", res.preferredName);
+            // localStorage.setItem("preferredName", res.preferredName);
             localStorage.setItem("email", res.email);
           }    
         })
       }, []);
 
+      React.useEffect(() => {
+        fetch("http://localhost:8080/userevents?sessionid="+sessionId)
+          .then((res) => res.json())
+          .then((json) => {
+            console.log("json")
+            console.log(json)
+            setUserEvents(json);
+          });
+      }, []);
+
+      // console.log("events")
+      // console.log(userEvents)
+
     return (
-        <div>
-            <UserInfoPane sessionId = {localStorage.getItem("session_id")}/>
-            <UserActionPane sessionId = {localStorage.getItem("sessionid")}/>
+        <div className = "displayScreen">
+            <UserInfoPane sessionId = {localStorage.getItem("sessionid")}/>
+            <UserActionPanel sessionId = {localStorage.getItem("sessionid")} userEvents = {userEvents}/>
         </div>
     )
 }

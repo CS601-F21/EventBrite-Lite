@@ -1,6 +1,14 @@
-const UserInfoPane = () => {
+import UserNameAndNameChangePanel from  "./UserNameAndNameChangePanel";
+import CreateEventPanel from "./CreateEventPanel";
+import React from "react";
+
+const UserInfoPane = (props) => {
+    const sessionId = props.sessionId; 
     return (
-        <div></div>
+        <div className = "userInfoPane">
+            <UserNameAndNameChangePanel sessionId = {sessionId}/>
+            <CreateEventPanel sessionId = {sessionId}/>
+        </div>
     )
 }
 
