@@ -33,7 +33,6 @@ function App() {
 
   return (
     <Routes>
-      {/* <Route path = "/login" element = {<LoginPage user={user} />}/> */}
       <Route
         path="/"
         element={
@@ -46,7 +45,7 @@ function App() {
         }
       />
 
-    <Route
+      <Route
         path="/user"
         element={
           <UserInfo

@@ -12,41 +12,41 @@ const LogoutComponent = (props) => {
       .then(() => window.location.reload());
   };
 
-  function redirectUser (){
+  function redirectUser() {
     const sessionId = localStorage.getItem("sessionid");
-    fetch("http://localhost:8080/userinfo?sessionid="+sessionId, {
+    fetch("http://localhost:8080/userinfo?sessionid=" + sessionId, {
       method: "GET",
       // mode: "no-cors",
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": "true"
+        "Access-Control-Allow-Credentials": "true",
       },
     })
-    .then ((res) => res.json())
-    .then ((json) => {
-      let res = json;
-      console.log(res)
-      /**
-       * A sucessful response will just be the user info and will
-       * not have the okay key
-       */
-      if ('ok' in res){
-        localStorage.clear(); 
-        alert("Session has expired, please login again")
-        window.location.reload();
-        return;
-      } else {
-        setUser(res);
-        window.location.href = '/user';
-      }
-    })
+      .then((res) => res.json())
+      .then((json) => {
+        let res = json;
+        console.log(res);
+        /**
+         * A sucessful response will just be the user info and will
+         * not have the okay key
+         */
+        if ("ok" in res) {
+          localStorage.clear();
+          alert("Session has expired, please login again");
+          window.location.reload();
+          return;
+        } else {
+          setUser(res);
+          window.location.href = "/user";
+        }
+      });
   }
 
   return (
     <div className={["loginWrapper"].join(" ")}>
       <div onClick={redirectUser} className="infoTextWrapper">
-        <h3 className = "infoText">
+        <h3 className="infoText">
           Hello {localStorage.getItem("preferredName")}
         </h3>
       </div>

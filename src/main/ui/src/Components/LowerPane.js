@@ -14,9 +14,8 @@ const LowerPane = (props) => {
       id={event.id}
       organizer={event.Organizer}
       price={event.Price}
-
-      events = {props.events}
-      purchasingTicket = {true}
+      events={props.events}
+      purchasingTicket={true}
     />
   ));
   return <div className="lowerPane">{modifiableEvents}</div>;

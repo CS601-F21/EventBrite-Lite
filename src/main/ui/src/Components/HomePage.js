@@ -20,7 +20,12 @@ const HomePage = (props) => {
   // }
   return (
     <div className="homePage">
-      <TopPane events={props.events} setEvents={props.setEvents} user = {props.user} setUser={props.setUser} />
+      <TopPane
+        events={props.events}
+        setEvents={props.setEvents}
+        user={props.user}
+        setUser={props.setUser}
+      />
       <LowerPane events={props.events} setEvents={props.setEvents} />
     </div>
   );

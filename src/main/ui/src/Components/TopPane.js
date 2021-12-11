@@ -13,7 +13,7 @@ const TopPane = (props) => {
   } else {
     return (
       <div className="topPane">
-        <LogoutComponent user = {props.user} setUser = {props.setUser} />
+        <LogoutComponent user={props.user} setUser={props.setUser} />
         <SearchBar events={props.events} setEvents={props.setEvents} />
       </div>
     );

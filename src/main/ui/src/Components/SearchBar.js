@@ -15,8 +15,8 @@ const SearchBar = (props) => {
     let location = document.getElementsByClassName("searchByLocation")[0].value;
     let priceLessThan =
       document.getElementsByClassName("searchByPrice")[0].value;
-    
-    if (priceLessThan == ""){
+
+    if (priceLessThan == "") {
       priceLessThan = 0;
     }
     console.log(
@@ -29,13 +29,12 @@ const SearchBar = (props) => {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "http://localhost:8080/search",
-        "Access-Control-Allow-Credentials": "true"
-
+        "Access-Control-Allow-Credentials": "true",
       },
       body: JSON.stringify({
-        'containsExactWord': containsExactWord,
-        'location': location,
-        'priceLessThan': priceLessThan
+        containsExactWord: containsExactWord,
+        location: location,
+        priceLessThan: priceLessThan,
       }),
     })
       .then((res) => res.json())

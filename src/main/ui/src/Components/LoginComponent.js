@@ -49,10 +49,10 @@ const LoginComponent = (props) => {
   }
   return (
     <div className={["loginWrapper"].join(" ")}>
-      <div className = "userInfo">Sign in</div>
+      <div className="userInfo">Sign in</div>
       <a
         className={"loginbutton"}
-        href="https://slack.com/openid/connect/authorize?scope=openid%20email%20profile&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Fb8d1-138-202-198-228.ngrok.io&amp;client_id=2376352929024.2799261688930"
+        href="https://slack.com/openid/connect/authorize?scope=openid%20email%20profile&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Fb909-138-202-129-155.ngrok.io&amp;client_id=2376352929024.2799261688930"
       >
         <svg
           className={"loginsvg1"}
