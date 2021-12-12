@@ -1,6 +1,6 @@
 /**
  * Author : Shubham Pareek
- * Purpose : API Call to this returns a JSON of all the events created by user
+ * Purpose : API Call to this servlet returns a JSON of all the events created by user
  */
 package Backend.Servlets;
 
@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 
 public class EventsByUserServlet extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(EventsByUserServlet.class);
@@ -37,13 +36,12 @@ public class EventsByUserServlet extends HttpServlet {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
             User user = ResponseUtils.getUser(req);
             resp.setHeader("Access-Control-Allow-Origin", "*");
+            //checking if the user is authenticated
             if (!ResponseUtils.userAuthenticated(user)){
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
                 return;
             }
 
-            LOGGER.info("User is ");
-            LOGGER.info(user.toString());
             //sql query
             ResultSet resultSet = db.getEventsByUser(user.getId());
             //helper method to send resultSet as a json object

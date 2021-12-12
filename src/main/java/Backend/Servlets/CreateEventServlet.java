@@ -4,25 +4,24 @@
  */
 package Backend.Servlets;
 
-import Backend.JWT.TokenUtils;
 import Backend.Servlets.RequestBodyObjects.NewEventBody;
 import Backend.Servlets.RequestBodyObjects.User;
 import Backend.Servlets.Utilities.ResponseUtils;
+
 import DB.SQLQuery;
+
 import com.google.gson.Gson;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -33,7 +32,7 @@ public class CreateEventServlet extends HttpServlet {
      * Since this uri will create a new event, we will require a bunch of information about the event and the
      * user who is actually creating the event.
      * So in this case it makes more sense if the POST request has a body with the required parameters
-     *
+     * The user has to be authenticated to create an event
      * The request body should have the following info :
      *      1) name
      *      2) location
@@ -55,20 +54,32 @@ public class CreateEventServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HashMap<String, String> responseMap = new HashMap<>();
         try {
+            //getting the query object
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
+            //getting the user info from the request
             User user = ResponseUtils.getUser(req);
+            LOGGER.info("The USER Object is the following");
+            LOGGER.info(user.toString());
+            //if the user is not authenticated, we send this response
             if (!ResponseUtils.userAuthenticated(user)){
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
                 return;
             }
-            req.getInputStream();
-            int organizerId = db.getUserIdFromEmail(user.getEmail());
+            /**
+             * If the user is authenticated, we carry on with creating the event
+             * First we get the body from the organizers' id from the user object
+             */
+//            req.getInputStream();
+//            int organizerId = db.getUserIdFromEmail(user.getEmail());
+            int organizerId = user.getId();
             Gson gson = new Gson();
+            //convert the request body to a string
             String requestStr = IOUtils.toString(req.getInputStream());
+            //convert the request body string to a newEventBody object
             NewEventBody newEventBody = gson.fromJson(requestStr, NewEventBody.class);
             newEventBody.setOrganizer(organizerId);
+            //insert the new event into the db
             boolean success = db.insertEvent(newEventBody);
             resp.setHeader("Access-Control-Allow-Origin", "*");
             ResponseUtils.send200OkResponse(success, null, resp);

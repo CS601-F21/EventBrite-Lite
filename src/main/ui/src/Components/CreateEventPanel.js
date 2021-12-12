@@ -1,6 +1,12 @@
+/**
+ * Author : Shubham
+ * Purpose : Component to let the user create the event
+ */
 const CreateEventPanel = (props) => {
+  //function which will be called everytime the user decides to create an event
   function createEvent(event) {
     event.preventDefault();
+    //getting the required info
     const eventName = document.getElementById("eventNameInput").value;
     const eventLocation = document.getElementById("eventLocationInput").value;
     const eventCapacity = document.getElementById("eventCapacityInput").value;
@@ -10,6 +16,7 @@ const CreateEventPanel = (props) => {
     const sessionId = localStorage.getItem("sessionid");
     // console.log(`event name ${eventName} eventLoc ${eventLocation} eventCap ${eventCapacity} eventPrice ${eventPrice} eventDate ${eventDate} userAttending ${userAttending}`);
 
+    //making the fetch request
     fetch("http://localhost:8080/createevent?sessionid=" + sessionId, {
       method: "POST",
       // mode: "no-cors",

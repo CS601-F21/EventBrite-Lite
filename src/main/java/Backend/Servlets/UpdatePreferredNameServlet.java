@@ -1,10 +1,9 @@
 /**
  * Author : Shubham Pareek
- * Purpose : API Call to this updates the preferred name of the user
+ * Purpose : API Call to this servlet updates the preferred name of the user
  */
 package Backend.Servlets;
 
-import Backend.JWT.TokenUtils;
 import Backend.Servlets.RequestBodyObjects.User;
 import Backend.Servlets.Utilities.ResponseUtils;
 import DB.SQLQuery;
@@ -33,19 +32,24 @@ public class UpdatePreferredNameServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try {
+            //getting the db
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
+            //getting the user object
             User user = ResponseUtils.getUser(req);
             resp.setHeader("Access-Control-Allow-Origin", "*");
+            //checking if the user is authenticated
             if (!ResponseUtils.userAuthenticated(user)){
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
                 return;
             }
 
+            //getting the user id and the name they want to be called by
             int userId = user.getId();
             String pref = req.getParameter("pref");
 
             boolean success = db.updateUserName(userId, pref);
 
+            //sending appropriate response
             if (success) {
                 ResponseUtils.send200OkResponse(true, null, resp);
             } else {

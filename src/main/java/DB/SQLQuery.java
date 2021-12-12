@@ -13,8 +13,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * This class contains all the queries the user will make to the db
+ */
 public class SQLQuery {
+    //connection which will be then be used to make queries to the db
     private Connection con;
+    //logger for logging purposes
     private static final Logger LOGGER = LogManager.getLogger(SQLQuery.class);
 
     /**
@@ -44,7 +49,7 @@ public class SQLQuery {
         String query = "SELECT * FROM Users;";
         return executeFetchQuery(query);
     }
-
+    /** Method to get the userinfo from the database */
     public ResultSet getUserInfo (int id) throws SQLException {
         String query = "SELECT * FROM Users WHERE id = ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -65,6 +70,7 @@ public class SQLQuery {
         return executeFetchQuery(query);
     }
 
+    /** Method to search for events by location*/
     public ResultSet searchByLocation (String location) throws SQLException {
         String query = "SELECT * FROM Events WHERE Location = ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -72,6 +78,7 @@ public class SQLQuery {
         return statement.executeQuery();
     }
 
+    /** Method to search for events by price and location */
     public ResultSet searchByPriceAndLocation (String location, int price) throws SQLException {
         String query = "SELECT * FROM Events WHERE Location = ? AND Price <= ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -80,7 +87,10 @@ public class SQLQuery {
         return statement.executeQuery();
     }
 
-    //https://stackoverflow.com/a/17322336/13311516
+    /**
+     *  Method to search for events by word
+     *  reference ==> https://stackoverflow.com/a/17322336/13311516
+     * */
     public ResultSet searchByWord (String word) throws SQLException {
         String query = "SELECT * FROM Events WHERE NAME LIKE ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -88,6 +98,13 @@ public class SQLQuery {
         return statement.executeQuery();
     }
 
+    /**
+     * Method to search for events by price and word
+     * @param word
+     * @param price
+     * @return
+     * @throws SQLException
+     */
     public ResultSet searchByPriceAndWord (String word, int price) throws SQLException {
         String query = "SELECT * FROM Events WHERE NAME LIKE ? AND Price <= ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -96,6 +113,12 @@ public class SQLQuery {
         return statement.executeQuery();
     }
 
+    /**
+     * Method to search for events by price
+     * @param price
+     * @return
+     * @throws SQLException
+     */
     public ResultSet searchByPrice (int price) throws SQLException {
         String query = "SELECT * FROM Events WHERE Price <= ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -103,7 +126,16 @@ public class SQLQuery {
         return statement.executeQuery();
     }
 
-    //https://stackoverflow.com/a/29049440/13311516
+
+    /**
+     * Method to search for events by price, location and word
+     * reference ==> https://stackoverflow.com/a/29049440/13311516
+     * @param price
+     * @param location
+     * @param word
+     * @return
+     * @throws SQLException
+     */
     public ResultSet searchByPriceLocationWord (int price, String location, String word) throws SQLException {
         String query = "SELECT * FROM Events WHERE Price <= ? AND Location = ? AND Name Like ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -115,6 +147,7 @@ public class SQLQuery {
 
     /**
      * Method to insert a new Event
+     * Returns a boolean whether the insertion was successful or not
      * @param event
      * @throws SQLException
      */
@@ -150,9 +183,11 @@ public class SQLQuery {
             insertEventAttendance(eventId, event.getOrganizer());
         }
 
-        return i > 0; //i is only greater than 0 if the insertion was successful
+        /** i is only greater than 0 if the insertion was successful **/
+        return i > 0;
     }
 
+    /** Method to get event details **/
     public ResultSet getEventDetails (int id) throws SQLException {
         String query = "SELECT * FROM Events WHERE Events.id = ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -226,6 +261,7 @@ public class SQLQuery {
         return success;
     }
 
+    /** Method to update the attendance of an event */
     public boolean updateAttendance (int num, int eventId) throws SQLException {
         String query = "UPDATE Events SET Attending = ? WHERE id = ? ";
         PreparedStatement statement = con.prepareStatement(query);
@@ -234,6 +270,7 @@ public class SQLQuery {
         return statement.executeUpdate() > 0;
     }
 
+    /** Method to get the attendance of an event */
     public int getEventAttendance (int eventId) throws SQLException {
         String query = "SELECT Attending FROM Events WHERE id = ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -244,6 +281,7 @@ public class SQLQuery {
         return count;
     }
 
+    /** Method to get the user id from an email */
     public int getUserIdFromEmail (String email) throws SQLException {
         String query = "SELECT id FROM Users WHERE email = ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -255,6 +293,7 @@ public class SQLQuery {
         return count;
     }
 
+    /** Helper method to convert the resultset to an arraylist**/
     public ArrayList<HashMap<String, String>> resultSetToArraylist (ResultSet resultSet) throws SQLException {
 
         ResultSetMetaData metaData = resultSet.getMetaData();
@@ -297,6 +336,7 @@ public class SQLQuery {
         return result;
     }
 
+    /** Method to get all the events a particular user is attending */
     public ResultSet getEventsUserAttending (int id) throws SQLException {
         String query = "SELECT * FROM Events WHERE Events.id in (" +
                     "SELECT Event_id FROM Event_Attendance WHERE User_id = ?)";
@@ -305,6 +345,7 @@ public class SQLQuery {
         return statement.executeQuery();
     }
 
+    /** Method to get events hosted by a particular user */
     public ResultSet getEventsByUser (int id) throws SQLException {
         String query = "SELECT * FROM Events WHERE Events.Organizer = ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -312,6 +353,7 @@ public class SQLQuery {
         return statement.executeQuery();
     }
 
+    /** Method to update the table when the user purchases a ticket */
     public boolean purchaseTicket (int userId, int eventId) throws SQLException{
         String query = "INSERT INTO Event_Attendance (Event_id, User_id) VALUES (?, ?);";
         PreparedStatement statement = con.prepareStatement(query);
@@ -321,6 +363,7 @@ public class SQLQuery {
         return i > 0; //i is only greater than 0 if the update was successful
     }
 
+    /** Method to check whether the user exists or not */
     public boolean userExists (String firstName, String lastName, String email) throws SQLException {
         String query = "SELECT * FROM Users WHERE First_Name = ? AND Last_Name = ? AND Email = ?";
 
@@ -335,6 +378,7 @@ public class SQLQuery {
         return result.next();
     }
 
+    /** Method to check whether the user exists or not, but this time only with the user if */
     public boolean checkUserExistWithId (int id) throws SQLException {
         String query = "SELECT * FROM Users WHERE id = ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -345,6 +389,7 @@ public class SQLQuery {
         return result.next();
     }
 
+    /** Method to check whether the user has the ticket or not */
     public boolean checkUserHasTicket (int userId, int eventId) throws SQLException {
         LOGGER.info("SQL Got user id " + userId + " and event id " + eventId);
         String query = "SELECT * FROM Event_Attendance WHERE User_id = ? AND Event_id = ?";
@@ -357,6 +402,7 @@ public class SQLQuery {
         return result.next();
     }
 
+    /** Method to check whether the user exists or not */
     public boolean checkUserExist (String email) throws SQLException {
         String query = "SELECT * FROM Users WHERE Email = ?";
         PreparedStatement statement = con.prepareStatement(query);
@@ -370,8 +416,8 @@ public class SQLQuery {
 
 
     /**
-     * Method where we actually execute the query and get the ResultSet
-     * Used only if user wants to get data from the database, different
+     * Method where we execute the queries where the user is searching for something
+     * and get the ResultSet Used only if user wants to get data from the database, different
      * method for inserting into db.
      * Returns ResultSet
      * @throws SQLException
@@ -382,6 +428,14 @@ public class SQLQuery {
         return results;
     }
 
+    /**
+     * Method to transfer tickets from one user to the other
+     * @param from
+     * @param receiverId
+     * @param eventId
+     * @return
+     * @throws SQLException
+     */
     public boolean transferTicket(int from, int receiverId, int eventId) throws SQLException {
         String query = "UPDATE  Event_Attendance\n" +
                 "SET \n" +
@@ -396,6 +450,13 @@ public class SQLQuery {
         return i > 0;
     }
 
+    /**
+     * Method to update the users preferred name
+     * @param id
+     * @param name
+     * @return
+     * @throws SQLException
+     */
     public boolean updateUserName (int id, String name) throws SQLException {
         String query = "UPDATE  Users\n" +
                 "SET \n" +

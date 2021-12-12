@@ -25,7 +25,8 @@ public class SearchEventServlet extends HttpServlet {
 
     /**
      * API call to this sends a response matching the search parameters, the request body will be of the following type
-     *      GET /search
+     *
+     *      GET /search?word={word}&location={location}&price={price}
      *          {
      *              containsExactWord : {title should have this exact word}
      *              priceLessThan : {price should be less than this}
@@ -39,14 +40,13 @@ public class SearchEventServlet extends HttpServlet {
      * @throws ServletException
      */
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
-            String requestStr = IOUtils.toString(req.getInputStream());
-            LOGGER.info("Received following request");
-            LOGGER.info(requestStr);
-            Gson gson = new Gson();
-            SearchBody body = gson.fromJson(requestStr, SearchBody.class);
+            String containsExactWord = req.getParameter("word");
+            int priceLessThan = Integer.parseInt(req.getParameter("price"));
+            String location = req.getParameter("location");
+            SearchBody body = new SearchBody(containsExactWord, priceLessThan, location);
 
             ResultSet resultSet; //we will use this to send out the output
             resp.setHeader("Access-Control-Allow-Origin", "*");

@@ -1,7 +1,14 @@
+/**
+ * Author : Shubham Pareek
+ * Purpose : Component for the EventBlock
+ */
 const EventBlocks = (props) => {
   const events = props.events;
   const setEvents = props.setEvents;
+
+  //function which makes the api call everytime the user wants to buy a ticket
   function buyTicket() {
+    //getting the sessionId from the localStorage
     const sessionId = localStorage.getItem("sessionid");
     const eventId = props.id;
     fetch(
@@ -22,6 +29,7 @@ const EventBlocks = (props) => {
       .then((res) => res.json())
       .then((json) => {
         let res = json[0];
+        //letting the user know whether the purchase was sucessful or not
         if (res["ok"] === "true") {
           alert("Purchase Sucessful");
           window.location.reload();
@@ -33,17 +41,23 @@ const EventBlocks = (props) => {
       });
   }
 
+  //function which will execute if the user wants to transfer the ticket
   function transferTicket(event) {
     event.preventDefault();
+    //getting the email id of the person to whom the ticket is to be transferred
     const email = document.getElementById("transferTicket").value;
+    //getting the sessionId
     const sessionId = props.sessionId;
+    //getting the eventId
     const eventId = props.id;
     console.log("Received id " + eventId + " sending to " + email);
-    // /transferticket?sessionid={sessionid}
-    //  *          {
-    //  *              to : {email address of the user who the ticket is being transferred to}
-    //  *              eventId : {id of the event}
-    //  *          }
+    /**
+     * /transferticket?sessionid={sessionid}
+     *          {
+     *              to : {email address of the user who the ticket is being transferred to}
+     *              eventId : {id of the event}
+     *          }
+     */
     fetch("http://localhost:8080/transferticket?sessionid=" + sessionId, {
       method: "POST",
       // mode: "no-cors",
@@ -61,6 +75,7 @@ const EventBlocks = (props) => {
       .then((json) => {
         let res = json[0];
 
+        //letting the user know whether the purchase was sucesfull or not
         if (res["ok"] == "true") {
           window.location.reload();
         } else {
@@ -70,6 +85,7 @@ const EventBlocks = (props) => {
       });
   }
 
+  //The HTML of the event block is different based on which page the user is on
   if (props.purchasingTicket) {
     return (
       <div className="eventBlock" id={props.id}>

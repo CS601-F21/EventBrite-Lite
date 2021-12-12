@@ -1,5 +1,10 @@
+/**
+ * Author : Shubham
+ * Purpose : Component to show all the tickets the user owns and let them transfer those tickets if the user desires
+ */
 import EventBlocks from "./EventBlocks";
 const UserActionPanel = (props) => {
+  //we get the userEvents from the props and then map the events tot he EventBlocks
   const userEvents = props.userEvents;
   console.log(userEvents);
   let modifiableEvents = userEvents.map((event) => (

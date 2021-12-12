@@ -1,54 +1,64 @@
-import Backend.JWT.TokenUtils;
+/**
+ * Author Name : Shubham Pareek
+ * Class Purpose : Main Class
+ */
+
 import Backend.MainServer;
 import Backend.Servlets.*;
 import Backend.Servlets.Authentication.GetSessionIDServlet;
 import Backend.Servlets.Authentication.LandingServlet;
 import Backend.Servlets.Authentication.LoginServlet;
 import Backend.Servlets.Authentication.LogoutServlet;
-import Backend.Servlets.RequestBodyObjects.SearchBody;
 import Config.ConfigurationManager;
 import DB.DBConnection;
 import DB.SQLQuery;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import com.google.gson.Gson;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+
+/**
+ * This is the class where we create the server and add the various mappings to it, allowing the user to make the various api calls
+ */
 public class Main {
+    //logger for loggin purposes
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
     public static void main (String[] args){
+        //config file path
         String filePath = "/home/shubham/IdeaProjects/project4-shubham0831/configuration.json";
+        /*
+            The config manager takes as input the config file and lets the user use the getters to get the various
+            configs
+         */
         ConfigurationManager config = new ConfigurationManager(filePath);
-        HashMap<String, String> test = config.getSlackConfig();
 
-        BasicConfigurator.configure(); //configuring logger
+        //configuring logger
+        BasicConfigurator.configure();
 
         try {
+            /**
+             * We first create a DBConnection and pass it the required params and the get the connection object from it, the connection object is then
+             * passed to the SQLQuery object which is the object using which the user will make the queries to the DB
+             */
             Connection connection = new DBConnection(config.getDBName(), config.getDBUser(), config.getDBPassword()).getDBConnection();
+            //the SQLQuery object
             SQLQuery query = new SQLQuery(connection);
-//            ResultSet resultSet = query.getUserId("Shubham", "Pareek", "spareek@dons.usfca.edu");
-//            query.checkUserExist("Naman", "Lashkari", "nlashkar@gmail.com");
-//            ResultSet resultSet = query.getEventId("Event-A", "Singapore", "20220210");
 
-//            query.insertEvent("Event-I", "Bahrain", 0, 1000, 2, "22-08-28");
-//            while (resultSet.next()){
-//                System.out.println("id is : " + resultSet.getInt("id"));
-//            }
-
+            //declaring the main server
             MainServer server = new MainServer(8080);
-            //home page, not actually that important, remove it later once login is done from the front-end
+            //adding the database connection as an attribute to the context
+            server.setDBConnection("db", query);
+
+            //home page
             server.addServlet(LandingServlet.class, "/"); //home page
-            //login servlet, might be removed once login is done from the front-end
+            //login servlet, called by the front-end end usually with the code param to authenticate the user
             server.addServlet(LoginServlet.class, "/login");
-            //logout server, same as earlier
+            //logout server, used by the user to logout
             server.addServlet(LogoutServlet.class, "/logout");
             //response will be a json object with the details of all the events
             server.addServlet(AllEventsServlet.class, "/allevents");
@@ -85,9 +95,6 @@ public class Main {
             //response will be a json object informing the front-end whether the event creation was successful or not
             //servlet will only handle POST Request, details about the request in the class
             server.addServlet(GetSessionIDServlet.class, "/sessionid");
-
-            //adding the database connection as an attribute to the context
-            server.setDBConnection("db", query);
 
             //adding login information as an attribute to the context
             server.setSlackConfig("slackAuthentication", config.getSlackConfig());

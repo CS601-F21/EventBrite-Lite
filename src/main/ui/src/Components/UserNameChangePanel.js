@@ -1,4 +1,9 @@
+/**
+ * Author : Shubham
+ * Purpose : Component to let the user change their preferred name
+ */
 const UserNameChangePanel = (props) => {
+  //function is called if the user decides to change their preferred name
   function changePreferredName(event) {
     event.preventDefault();
     const preferredName =
@@ -10,6 +15,7 @@ const UserNameChangePanel = (props) => {
 
     // /updateusername?sessionid={sessionid}&pref={newname}
 
+    //making the fetch request
     fetch(
       "http://localhost:8080/updateusername?sessionid=" +
         sessionId +

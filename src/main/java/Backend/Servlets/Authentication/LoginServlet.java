@@ -1,13 +1,11 @@
 /**
  * Author : Sami Rollins
  * Modified By : Shubham Pareek
- * Purpose : Handles the Login
+ * Purpose : Authenticate the user
  */
 
 package Backend.Servlets.Authentication;
 
-import Backend.JWT.TokenUtils;
-import Backend.Servlets.RequestBodyObjects.User;
 import Backend.Servlets.Utilities.*;
 import DB.SQLQuery;
 import jakarta.servlet.ServletException;
@@ -16,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.LogManager;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.eclipse.jetty.http.HttpStatus;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -26,41 +23,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-
 
 /**
  * Handles the login for the user. Once a user has successfully been logged in, we check the database for whether the user
  * exists or not, if not, we create an entry in the database for the said user.
- * We then send a json body to the front-end with the user-info such as the user_id and so on
+ * We then send a json body to the front-end with the user-info and the session id.
+ *
+ * A valid uri is :
+ *      /login?code={code from slack}
  */
 
 public class LoginServlet extends HttpServlet {
 
+    //logger
     private static final Logger LOGGER = LogManager.getLogger(LoginServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        // retrieve the ID of this session
+        // getting the code the user got form slack
         String code  = req.getParameter("code");
         LOGGER.info("Code received from ui is " + code);
 
-//        LOGGER.info("Session id in the Login Page servlet is " + sessionId);
-
-        // determine whether the user is already authenticated
-        Object clientInfoObj = req.getSession().getAttribute(LoginServerConstants.CLIENT_INFO_KEY);
-        if(clientInfoObj != null) {
-            // already authed, no need to log in
-            resp.getWriter().println(LoginServerConstants.PAGE_HEADER);
-            resp.getWriter().println("<h1>You have already been authenticated</h1>");
-            resp.getWriter().println(LoginServerConstants.PAGE_FOOTER);
-            return;
-        }
-
-        LOGGER.info("clientInfoObj is null");;
-
-        // retrieve the config info from the context
+        // retrieving the config info from the context
         HashMap<String, String> config = (HashMap<String, String>) req.getServletContext().getAttribute("slackAuthentication");
 
         // generate the url to use to exchange the code for a token:
@@ -86,13 +71,15 @@ public class LoginServlet extends HttpServlet {
 //        }
 
 
+        //if the authentication is unsuccessful, we return the message as a json to the user
         if(clientInfo == null) {
-            resp.setStatus(HttpStatus.OK_200);
-            resp.getWriter().println(LoginServerConstants.PAGE_HEADER);
-            resp.getWriter().println("<h1>login unsuccessful, try again</h1>");
-            resp.getWriter().println(LoginServerConstants.PAGE_FOOTER);
+            ResponseUtils.send200OkResponse(false, "Authentication unsuccessful", resp);
+            return;
         } else {
             try {
+                /**
+                 * Else we first check for the user in the db, if they do not exist, then we create an entry for them,
+                 */
                 SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
                 String firstName = (String)clientInfo.get("given_name");
                 String lastName = (String)clientInfo.get("family_name");
@@ -104,28 +91,27 @@ public class LoginServlet extends HttpServlet {
                     db.insertUser(firstName, lastName, firstName, email);
                 }
 
+                //regardless we get the user id from the database, which we then use to get the rest of the user information
                 int userId = db.getUserIdFromEmail(email);
 
                 //getting the user info
                 ResultSet resultSet = db.getUserInfo(userId);
                 ArrayList<HashMap<String, String>> jsonList = ResponseUtils.resultSetToJson(resultSet);
+                //the user info we get from the previous line is going to be the first entry of the arraylist we received
                 HashMap<String, String> userInfo = jsonList.get(0);
-//                String JWTToken = TokenUtils.generateToken(userId, firstName, lastName, userInfo.get("Preferred_Name"), email);
-//                //inserting the JWT token into the body as well, this will then be set as the browser cookie in the front-end server
+                //we get the session id and put it into the user info map, to be sent to the user
                 String sessionId = req.getSession(true).getId();
-//                LOGGER.info("Setting session attribute " + sessionId);
                 userInfo.put("sessionid", sessionId);
+                //we create a servlet context mapping the session id with the userinfo, letting us authenticate the user with the session id
                 req.getServletContext().setAttribute(sessionId, userInfo);
-
-//                resp.setHeader("Set-Cookie", "jwt=" + JWTToken + "; Secure; HttpOnly; SameSite=None; Path=/login; Max-Age=99999999;");
-//                LOGGER.info("Generated token " + JWTToken);
-//                LOGGER.info("Reverse is  " + TokenUtils.decodeToken(JWTToken));
+                //this header is for cors
                 resp.setHeader("Access-Control-Allow-Origin", "*");
-
+                //since we have to send a json request, we first need to convert the map to a json string, object mapper lets us do this
                 ObjectMapper mapper = new ObjectMapper();
                 String json = mapper.writeValueAsString(userInfo);
                 LOGGER.info("Object mapped is ");
                 LOGGER.info(json);
+                //sending the response
                 ResponseUtils.send200JsonResponse(json, resp);
             } catch (SQLException e) {
                 e.printStackTrace();

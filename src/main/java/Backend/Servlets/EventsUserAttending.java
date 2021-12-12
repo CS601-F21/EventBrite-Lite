@@ -1,6 +1,6 @@
 /**
  * Author : Shubham Pareek
- * Purpose : API Call to this returns a JSON of all the events the user will be attending
+ * Purpose : API Call to this servlet returns a JSON of all the events the user will be attending
  */
 package Backend.Servlets;
 
@@ -17,10 +17,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+
 
 public class EventsUserAttending extends HttpServlet {
+    //logger
     private static final Logger LOGGER = LogManager.getLogger(EventsUserAttending.class);
 
     /**
@@ -38,6 +38,7 @@ public class EventsUserAttending extends HttpServlet {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
             User user = ResponseUtils.getUser(req);
             resp.setHeader("Access-Control-Allow-Origin", "*");
+            //checking whether the user is authenticated or not
             if (!ResponseUtils.userAuthenticated(user)){
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
                 return;

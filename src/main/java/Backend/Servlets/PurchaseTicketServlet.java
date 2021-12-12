@@ -43,6 +43,7 @@ public class PurchaseTicketServlet extends HttpServlet {
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
             LOGGER.info("Got purchase request");
             User user = ResponseUtils.getUser(req);
+            //checking whether the user is authenticated
             if (!ResponseUtils.userAuthenticated(user)){
                 LOGGER.info("User is not authenticated");
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
@@ -60,7 +61,13 @@ public class PurchaseTicketServlet extends HttpServlet {
             //both the methods will give a boolean whether the insertion/updation was successful or not
             boolean successful = db.purchaseTicket(userId, eventId) && db.updateEventAttending(1, eventId);
             LOGGER.info("success is " + successful);
+            //letting the user know whether the purchase was a success or not
+            if (!successful){
+                send200OkResponse(successful, "internal server error", resp);
+                return;
+            }
             send200OkResponse(successful, null, resp);
+
 
         } catch (SQLException e) {
             try {

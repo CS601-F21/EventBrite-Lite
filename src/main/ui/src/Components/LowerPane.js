@@ -1,8 +1,15 @@
+/**
+ * Author : Shubham Pareek
+ * Purpose : Component for the lower pane, which will show all the events
+ */
 import EventBlocks from "./EventBlocks";
 const LowerPane = (props) => {
   const events = props.events;
   const setEvents = props.setEvents;
+
+  //we cannot make changes to a state directly hence we create this new variable
   let modifiableEvents = events;
+  //mapping the contents of the modifiableEvents to an EventBlock
   modifiableEvents = modifiableEvents.map((event) => (
     <EventBlocks
       key={event.id}
@@ -18,6 +25,8 @@ const LowerPane = (props) => {
       purchasingTicket={true}
     />
   ));
+
+  //showcasing all the events
   return <div className="lowerPane">{modifiableEvents}</div>;
 };
 

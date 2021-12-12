@@ -1,3 +1,8 @@
+/**
+ * Author : Sami Rollins
+ * Modified By : Shubham Pareek
+ * Purpose : Log the user out
+ */
 package Backend.Servlets.Authentication;
 
 import Backend.Servlets.Utilities.LoginServerConstants;
@@ -16,14 +21,8 @@ public class LogoutServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         // log out by invalidating the session
         req.getSession().invalidate();
-        resp.getWriter().println(LoginServerConstants.PAGE_HEADER);
-        resp.getWriter().println("<h1>Thanks for playing</h1>");
-        resp.getWriter().println(LoginServerConstants.PAGE_FOOTER);
-        resp.setHeader("Access-Control-Allow-Origin", "*");
         ResponseUtils.send200OkResponse(true, null, resp);
-
     }
 }

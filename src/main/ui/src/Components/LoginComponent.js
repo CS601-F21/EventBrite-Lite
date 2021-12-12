@@ -1,3 +1,8 @@
+/**
+ * Author : Shubham Pareek
+ * Purpose : Component for the login button
+ */
+
 import react, { Component, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -47,12 +52,17 @@ const LoginComponent = (props) => {
       // document.cookie = 'JWT='+info.JWT+ 'Secure; HttpOnly; SameSite=None; Max-Age=99999999;'
     });
   }
+
+  /**
+   * Everything inside the loginWrapper is from
+   * https://api.slack.com/authentication/sign-in-with-slack#generator
+   */
   return (
     <div className={["loginWrapper"].join(" ")}>
       <div className="userInfo">Sign in</div>
       <a
         className={"loginbutton"}
-        href="https://slack.com/openid/connect/authorize?scope=openid%20email%20profile&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Fb909-138-202-129-155.ngrok.io&amp;client_id=2376352929024.2799261688930"
+        href="https://slack.com/openid/connect/authorize?scope=openid%20email%20profile&amp;response_type=code&amp;redirect_uri=https%3A%2F%2F6b45-2601-646-4200-e040-f26f-89a7-f50d-9119.ngrok.io&amp;client_id=2376352929024.2799261688930"
       >
         <svg
           className={"loginsvg1"}

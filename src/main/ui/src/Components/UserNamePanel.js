@@ -1,3 +1,7 @@
+/**
+ * Author : Shubham
+ * Purpose : Component to show the user name
+ */
 const UserNamePanel = (props) => {
   return (
     <div className="userNamePanel">

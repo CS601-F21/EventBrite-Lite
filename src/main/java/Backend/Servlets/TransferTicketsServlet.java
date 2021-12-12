@@ -1,10 +1,9 @@
 /**
  * Author : Shubham Pareek
- * Purpose : API Call to this transfers the tickets between users
+ * Purpose : API Call to this servlet transfers the tickets between users
  */
 package Backend.Servlets;
 
-import Backend.JWT.TokenUtils;
 import Backend.Servlets.RequestBodyObjects.TransferTicketBody;
 import Backend.Servlets.RequestBodyObjects.User;
 import Backend.Servlets.Utilities.ResponseUtils;
@@ -40,27 +39,34 @@ public class TransferTicketsServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try {
+            //getting the db
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
+            //getting the user who wants to transfer the ticket
             User user = ResponseUtils.getUser(req);
             resp.setHeader("Access-Control-Allow-Origin", "*");
+            //checking whether the user is authenticated
             if (!ResponseUtils.userAuthenticated(user)){
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
                 return;
             }
-
+            //getting the request body
             String requestStr = IOUtils.toString(req.getInputStream());
             LOGGER.info("The request string is ");
             LOGGER.info(requestStr);
             Gson gson = new Gson();
+            //creating the transfer ticket object
             TransferTicketBody body = gson.fromJson(requestStr, TransferTicketBody.class);
             body.setFrom(user.getId());
 
             LOGGER.info("Transfer ticket recieved ");
             LOGGER.info(body.toString());
             LOGGER.info("Ticket is from " + body.getFrom());
+            //checking whether the user has the ticket or not
             boolean userHasTicket = db.checkUserHasTicket(body.getFrom(), body.getEventId());
+            //checking whether the person to whom the ticket is being transferred to is a user on our website or not
             boolean receiverExists = db.checkUserExist(body.getEmail());
 
+            //sending appropriate response
             if (!userHasTicket) {
                 ResponseUtils.send200OkResponse(false, "User does not own this ticket", resp);
                 return;

@@ -1,3 +1,8 @@
+/**
+ * Author : Shubham Pareek
+ * Class Purpose : Establish a JDBC connection to the database
+ * Notes : Using a connection pool
+ */
 package DB;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -43,14 +48,4 @@ public class DBConnection {
         return dataSource.getConnection();
     }
 
-//    public static void main(String[] args){
-//        try (
-//                BasicDataSource dataSource = DBConnection.getDataSource();
-//                Connection con = dataSource.getConnection();
-//        ){
-//            executeSelectAndPrint(con);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

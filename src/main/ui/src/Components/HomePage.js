@@ -1,3 +1,7 @@
+/**
+ * Author : Shubham Pareek
+ * Purpose : Home page component
+ */
 import react, { Component, useState } from "react";
 import { useSelector } from "react-redux";
 import React from "react";
@@ -6,18 +10,14 @@ import TopPane from "./TopPane";
 import LowerPane from "./LowerPane";
 
 const HomePage = (props) => {
+  //getting the required props
   const { events, setEvents } = props;
-  // console.log("events");
-  // console.log(events);
 
-  // function addEvent() {
-  //   // make api call
-  //   // get response
-
-  //   fetch("http://localhost:8080/allevents")
-  //     .then((res) => res.json())
-  //     .then((json) => setEvents([...props.events, ...json]));
-  // }
+  /**
+   * The homepage is broken down into two parts, the TopPane and the LowerPane
+   * The TopPane is where we have the login button and the search bar and the lower pane
+   * is where we display all the events
+   */
   return (
     <div className="homePage">
       <TopPane

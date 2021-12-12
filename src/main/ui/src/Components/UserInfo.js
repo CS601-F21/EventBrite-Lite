@@ -1,3 +1,7 @@
+/**
+ * Author : Shubham
+ * Purpose : Page which is displayed when the user wants to check out their information
+ */
 import React, { Component } from "react";
 import UserInfoPane from "./UserInfoPane";
 import UserActionPanel from "./UserActionPanel";
@@ -7,6 +11,7 @@ const UserInfo = (props) => {
   // console.log("---")
   // console.log(userEvents)
 
+  //we get the user info every time the user comes to this page
   React.useEffect(() => {
     console.log(sessionId);
     fetch("http://localhost:8080/userinfo?sessionid=" + sessionId, {
@@ -41,6 +46,7 @@ const UserInfo = (props) => {
       });
   }, []);
 
+  //we also need to get a list of events which the user will be attending
   React.useEffect(() => {
     fetch("http://localhost:8080/userevents?sessionid=" + sessionId)
       .then((res) => res.json())
@@ -54,6 +60,9 @@ const UserInfo = (props) => {
   // console.log("events")
   // console.log(userEvents)
 
+  /**
+   * This component is broken down into two further components, the infoPane and the actionPanel
+   */
   return (
     <div className="displayScreen">
       <UserInfoPane sessionId={localStorage.getItem("sessionid")} />

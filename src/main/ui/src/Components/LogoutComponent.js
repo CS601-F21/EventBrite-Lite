@@ -1,3 +1,7 @@
+/**
+ * Author : Shubham Pareek
+ * Purpose : Component for the logout button
+ */
 import react, { Component, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -6,12 +10,16 @@ const LogoutComponent = (props) => {
   const user = props.user;
   const setUser = props.setUser;
 
+  //clicking the button calls the /logout uri and deactivate the session
+  //we also clear the localstorage if the user decides to log out
   const logout = () => {
     fetch("http://localhost:8080/logout")
       .then(() => localStorage.clear())
       .then(() => window.location.reload());
   };
 
+  //if the user wants to check out their info they will click on the button and will be redirected to some other page
+  //this block of code ensures that happens
   function redirectUser() {
     const sessionId = localStorage.getItem("sessionid");
     fetch("http://localhost:8080/userinfo?sessionid=" + sessionId, {

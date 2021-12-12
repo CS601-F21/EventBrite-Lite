@@ -1,6 +1,6 @@
 /**
  * Author : Shubham Pareek
- * Purpose : API Call to this responds back with a json body with information about the user
+ * Purpose : API Call to this servlet responds back with a json body with information about the user
  */
 package Backend.Servlets;
 
@@ -35,14 +35,20 @@ public class UserInformationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         try {
+            //getting the db
             SQLQuery db = (SQLQuery) req.getSession().getServletContext().getAttribute("db");
+            //getting the user object
             User user = ResponseUtils.getUser(req);
             resp.setHeader("Access-Control-Allow-Origin", "*");
+            //checking whether user is authenticated or not
             if (!ResponseUtils.userAuthenticated(user)){
                 ResponseUtils.send200OkResponse(false, "User not authenticated", resp);
                 return;
             }
+            //setting the user id as 0 for security reasons
             user.setId(0);
+            //since we already have the user info stored in our context we do not make a db query, and instead just convert the
+            //user info to string and return that as a json response
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(user);
             LOGGER.info("Response is ===> " + json);
