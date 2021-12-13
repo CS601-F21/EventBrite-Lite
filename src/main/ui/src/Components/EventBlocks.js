@@ -2,6 +2,8 @@
  * Author : Shubham Pareek
  * Purpose : Component for the EventBlock
  */
+//lodash is used to generate unique id's
+import _ from "lodash";
 const EventBlocks = (props) => {
   const events = props.events;
   const setEvents = props.setEvents;
@@ -44,8 +46,12 @@ const EventBlocks = (props) => {
   //function which will execute if the user wants to transfer the ticket
   function transferTicket(event) {
     event.preventDefault();
+    console.log("=============> " + event.currentTarget.id);
     //getting the email id of the person to whom the ticket is to be transferred
-    const email = document.getElementById("transferTicket").value;
+    const email = document.getElementById(event.currentTarget.id)[0].value;
+    console.log(email);
+    // const input = formInput.querySelector("#transferTicket").value;
+    // console.log(input);
     //getting the sessionId
     const sessionId = props.sessionId;
     //getting the eventId
@@ -145,12 +151,12 @@ const EventBlocks = (props) => {
           Organized By : <span>{props.organizer}</span>
         </div>
         <div className="transferTicket">
-          <form onSubmit={transferTicket}>
+          <form id={_.uniqueId("form")} onSubmit={transferTicket}>
             <label for="transferTicket" className="transferTicketLabel">
               Transfer Ticket To (Email of receipient) :
               <input
                 type="email"
-                id="transferTicket"
+                id={_.uniqueId("element")}
                 name="transferTicket"
                 className="transferTicket"
                 required

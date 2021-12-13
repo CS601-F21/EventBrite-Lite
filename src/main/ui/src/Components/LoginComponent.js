@@ -62,7 +62,7 @@ const LoginComponent = (props) => {
       <div className="userInfo">Sign in</div>
       <a
         className={"loginbutton"}
-        href="https://slack.com/openid/connect/authorize?scope=openid%20email%20profile&amp;response_type=code&amp;redirect_uri=https%3A%2F%2F6b45-2601-646-4200-e040-f26f-89a7-f50d-9119.ngrok.io&amp;client_id=2376352929024.2799261688930"
+        href="https://slack.com/openid/connect/authorize?scope=openid%20email%20profile&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Fb65d-24-7-120-181.ngrok.io&amp;client_id=2376352929024.2799261688930"
       >
         <svg
           className={"loginsvg1"}
